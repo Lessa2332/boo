@@ -199,7 +199,7 @@
                 cursor="fuse: false; maxDistance: 10"
                 position="0 0 -1"
                 geometry="primitive: ring; radiusOuter: 0.015; radiusInner: 0.008"
-                material="color: #FF7518; shader: flat" <!-- Orange cursor -->
+                material="color: #FF7518; shader: flat"
             ></a-cursor>
         </a-camera>
 
@@ -209,11 +209,19 @@
                 src="#logo-img"
                 position="0 0 0.05"
                 rotation="30 0 0"
-                scale="2.5 2.5 2.5"
-                visible="true"
-            ></a-image>
+                scale="0.8 0.8 0.8" <!-- Зменшено масштаб до 0.8 -->
+            >
+                <!-- Анімація обертання 360° -->
+                <a-animation
+                    attribute="rotation"
+                    to="30 360 0"
+                    dur="5000"
+                    repeat="indefinite"
+                    easing="linear"
+                ></a-animation>
+            </a-image>
             <a-entity id="game-elements" visible="false">
-                <!-- Additional AR elements can be added here -->
+                <!-- Тут можна додати допоміжні елементи для AR -->
             </a-entity>
         </a-entity>
     </a-scene>
