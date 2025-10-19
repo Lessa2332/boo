@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>🎃 AR Game "Halloween Surprise!" — for Halloween! 🦇</title>
 
-    <!-- A-Frame + MindAR (updated to latest version) -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <!-- A-Frame + MindAR -->
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js" defer></script>
 
-    <!-- Comic Neue for better rendering on iOS -->
+    <!-- Comic Neue font -->
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -36,13 +37,13 @@
             position: absolute;
             top: 0;
             left: 0;
-            background: rgba(0, 0, 0, 0.6); /* Halloween dark theme */
+            background: rgba(0, 0, 0, 0.6);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #FF7518; /* Orange */
+            color: #FF7518;
             font-size: 1.5em;
             text-align: center;
             padding: 20px;
@@ -68,32 +69,11 @@
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
             text-transform: none;
         }
-        #playBtn {
-            bottom: 180px;
-            background: linear-gradient(45deg, #FF7518, #000000); /* Orange to black */
-            color: white;
-        }
-        #stopBtn {
-            bottom: 180px;
-            background: linear-gradient(45deg, #9932CC, #4B0082); /* Purple shades */
-            color: white;
-        }
-        #resetBtn {
-            bottom: 100px;
-            background: linear-gradient(45deg, #FF4500, #8B0000); /* Red-orange */
-            color: white;
-        }
-        #soundBtn {
-            bottom: 260px;
-            background: linear-gradient(45deg, #32CD32, #006400); /* Green for spooky */
-            color: white;
-        }
-        #langBtn {
-            bottom: 340px;
-            background: linear-gradient(45deg, #A9A9A9, #696969); /* Gray for language */
-            color: white;
-            display: none;
-        }
+        #playBtn { bottom: 180px; background: linear-gradient(45deg, #FF7518, #000000); color: white; }
+        #stopBtn { bottom: 180px; background: linear-gradient(45deg, #9932CC, #4B0082); color: white; }
+        #resetBtn { bottom: 100px; background: linear-gradient(45deg, #FF4500, #8B0000); color: white; }
+        #soundBtn { bottom: 260px; background: linear-gradient(45deg, #32CD32, #006400); color: white; }
+        #langBtn { bottom: 340px; background: linear-gradient(45deg, #A9A9A9, #696969); color: white; display: none; }
         #youtubeBtn {
             position: fixed;
             bottom: 20px;
@@ -127,24 +107,27 @@
             text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
             text-transform: none;
         }
-        #timerText {
-            color: #FF7518; /* Orange */
-            font-size: 1.4em;
-            display: none;
-        }
-        #scoreText {
-            top: 50px;
-            color: #32CD32; /* Green */
-            font-size: 1.4em;
-            display: none;
-        }
+        #timerText { color: #FF7518; font-size: 1.4em; display: none; }
+        #scoreText { top: 50px; color: #32CD32; font-size: 1.4em; display: none; }
         #canvasGameContainer {
             z-index: 1000;
             position: relative;
         }
         #endMessage {
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            text-transform: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: #FF7518;
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 10000;
+            font-size: 1.2em;
+            text-align: center;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            display: none;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -172,8 +155,7 @@
         <button id="endBtn" class="ui-btn">🛑 End</button>
     </div>
 
-    <div id="endMessage" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); color:#FF7518; padding:20px; border-radius:15px; z-index:10000; font-size:1.2em; text-align:center; font-family:'Comic Neue', 'Comic Sans MS', cursive; box-shadow:0 8px 20px rgba(0,0,0,0.4);">
-    </div>
+    <div id="endMessage"></div>
 
     <a-scene
         mindar-image="imageTargetSrc: ./targets.mind;"
@@ -209,9 +191,9 @@
                 src="#logo-img"
                 position="0 0 0.05"
                 rotation="30 0 0"
-                scale="0.8 0.8 0.8" <!-- Зменшено масштаб до 0.8 -->
+                scale="0.8 0.8 0.8"
+                visible="true"
             >
-                <!-- Анімація обертання 360° -->
                 <a-animation
                     attribute="rotation"
                     to="30 360 0"
@@ -220,9 +202,7 @@
                     easing="linear"
                 ></a-animation>
             </a-image>
-            <a-entity id="game-elements" visible="false">
-                <!-- Тут можна додати допоміжні елементи для AR -->
-            </a-entity>
+            <a-entity id="game-elements" visible="false"></a-entity>
         </a-entity>
     </a-scene>
 
@@ -264,7 +244,7 @@
         let emojis = [];
         let startTime = null;
         let inputHandler = null;
-        let currentLang = navigator.language.startsWith('uk') ? 'uk' : 'en'; // Default to en for US audience
+        let currentLang = navigator.language.startsWith('uk') ? 'uk' : 'en';
 
         const translations = {
             en: {
@@ -313,7 +293,6 @@
             soundBtn.textContent = translations[currentLang].soundBtn;
             langBtn.textContent = translations[currentLang].langBtn;
             document.getElementById('endBtn').textContent = translations[currentLang].endBtn;
-            // Update endMessage in end function
         }
 
         updateLanguage();
@@ -323,7 +302,6 @@
             updateLanguage();
         });
 
-        // Stop all audio
         function stopAllAudio() {
             [bgMusic, logoSound, clickSound].forEach(audio => {
                 if (audio) {
@@ -334,14 +312,12 @@
             });
         }
 
-        // Handle page visibility change
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 stopAllAudio();
             }
         });
 
-        // Enable sound button
         soundBtn.addEventListener('click', () => {
             [bgMusic, logoSound, clickSound].forEach(audio => {
                 if (audio) audio.muted = false;
@@ -381,14 +357,6 @@
         playBtn.addEventListener('click', startCanvasGame);
         stopBtn.addEventListener('click', stopGame);
         resetBtn.addEventListener('click', resetGame);
-
-        youtubeBtn.addEventListener('click', () => {
-            window.open('https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi', '_blank');
-        });
-        youtubeBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            window.open('https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi', '_blank');
-        });
 
         function startCanvasGame() {
             isGameRunning = true;
@@ -455,8 +423,8 @@
             }
 
             const maxEmojisOnScreen = 10;
-            const scaryEmojis = ['😱', '👻', '💀', '🕷️', '🦇']; // Scary Halloween
-            const funEmojis = ['🎃', '🍬', '🧙', '🧟', '🤡']; // Fun Halloween
+            const scaryEmojis = ['😱', '👻', '💀', '🕷️', '🦇'];
+            const funEmojis = ['🎃', '🍬', '🧙', '🧟', '🤡'];
 
             function createEmoji() {
                 return {
@@ -501,7 +469,7 @@
                     const dx = x - emoji.x;
                     const dy = y - emoji.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < emoji.size) { // Increased sensitivity
+                    if (distance < emoji.size) {
                         emoji.isClicked = true;
                         emoji.fadeOut = 1;
                         emoji.value = funEmojis[Math.floor(Math.random() * funEmojis.length)];
@@ -541,7 +509,7 @@
                     ctx.font = `${emoji.size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillStyle = emoji.isClicked ? '#FF7518' : '#FFFFFF'; // Orange for clicked
+                    ctx.fillStyle = emoji.isClicked ? '#FF7518' : '#FFFFFF';
                     ctx.fillText(emoji.value, emoji.x, emoji.y);
                     ctx.globalAlpha = 1;
                 });
@@ -587,9 +555,15 @@
         }
 
         // Fallback if no AR support
-        if (!AFRAME.utils.device.checkARSupport()) {
-            alert(currentLang === 'en' ? 'Your device does not support AR. Please try on a mobile device with camera.' : 'Ваш пристрій не підтримує AR. Спробуйте на мобільному пристрої з камерою.');
+        if (typeof AFRAME !== 'undefined' && AFRAME.utils && AFRAME.utils.device) {
+            if (!AFRAME.utils.device.checkARSupport()) {
+                alert(currentLang === 'en'
+                    ? 'Your device does not support AR. Please try on a mobile device with camera.'
+                    : 'Ваш пристрій не підтримує AR. Спробуйте на мобільному пристрої з камерою.'
+                );
+            }
         }
     </script>
 </body>
 </html>
+
