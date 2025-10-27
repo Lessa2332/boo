@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000">
   <title>My Coloring Page — AR for Kids! 🎨</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖍️</text></svg>">
 
   <!-- Preload -->
-  <link rel="preload" href="./7-targets.mind" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="./7-targets.mind" as="fetch" type="application/octet-stream" crossorigin="anonymous" />
   <link rel="preload" href="./bg-music.mp3" as="audio" />
   <link rel="preload" href="./lab.mp3" as="audio" />
 
@@ -58,7 +59,7 @@
     #loader p {
       color: #FFD166;
     }
-    .btn {
+    #shopBtn {
       position: fixed;
       bottom: 20px;
       left: 50%;
@@ -76,7 +77,7 @@
       font-family: 'Comic Neue', cursive;
       min-width: 220px;
     }
-    .btn:active {
+    #shopBtn:active {
       transform: translateX(-50%) scale(0.96);
     }
     @keyframes float {
@@ -119,7 +120,8 @@
       <img id="logo7" src="./logo7.png">
     </a-assets>
 
-    <a-camera look-controls="enabled: false"></a-camera>
+    <!-- Critical: camera must have position -->
+    <a-camera look-controls="enabled: false" position="0 0 0"></a-camera>
 
     <!-- 7 targets -->
     <a-entity mindar-image-target="targetIndex: 0">
@@ -159,7 +161,7 @@
     </a-entity>
   </a-scene>
 
-  <button id="shopBtn" class="btn" aria-label="Visit my Etsy shop">Shop 🛍️</button>
+  <button id="shopBtn" aria-label="Visit my Etsy shop">Shop 🛍️</button>
 
   <script>
     const loader = document.getElementById('loader');
@@ -168,12 +170,10 @@
     const magicSound = document.getElementById('magic-sound');
     let userInteracted = false;
 
-    // Open Etsy shop
     shopBtn.addEventListener('click', () => {
       window.open('https://smartlessa.etsy.com', '_blank', 'noopener,noreferrer');
     });
 
-    // Unlock audio on first interaction
     function unlockAudio() {
       if (userInteracted) return;
       userInteracted = true;
@@ -183,33 +183,34 @@
           audio.currentTime = 0;
         }
       });
-      if (magicSound) magicSound.play().catch(() => {});
-      if (bgMusic) bgMusic.play().catch(() => {});
+      if (magicSound) magicSound.play().catch(e => console.log("Sound play failed:", e));
+      if (bgMusic) bgMusic.play().catch(e => console.log("Music play failed:", e));
     }
 
     document.body.addEventListener('touchstart', unlockAudio, { once: true });
     document.body.addEventListener('click', unlockAudio, { once: true });
 
-    // Handle marker detection
-    const targets = document.querySelectorAll('a-entity[mindar-image-target]');
-    let anyFound = false;
+    // Wait for scene to load before attaching listeners
+    document.querySelector('a-scene').addEventListener('loaded', () => {
+      const targets = document.querySelectorAll('a-entity[mindar-image-target]');
+      let anyFound = false;
 
-    targets.forEach(target => {
-      target.addEventListener('targetFound', () => {
-        if (!anyFound) {
-          anyFound = true;
-          loader.style.display = 'none';
-          unlockAudio();
-        }
-      });
+      targets.forEach(target => {
+        target.addEventListener('targetFound', () => {
+          if (!anyFound) {
+            anyFound = true;
+            loader.style.display = 'none';
+            unlockAudio();
+          }
+        });
 
-      target.addEventListener('targetLost', () => {
-        // Check if any target is still visible
-        const stillVisible = Array.from(targets).some(t => t.object3D.visible);
-        if (!stillVisible) {
-          anyFound = false;
-          loader.style.display = 'flex';
-        }
+        target.addEventListener('targetLost', () => {
+          const stillVisible = Array.from(targets).some(t => t.object3D.visible);
+          if (!stillVisible) {
+            anyFound = false;
+            loader.style.display = 'flex';
+          }
+        });
       });
     });
   </script>
