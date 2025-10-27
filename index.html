@@ -22,6 +22,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #FF7518;
+            --secondary-color: #32CD32;
+            --accent-color: #9932CC;
+            --danger-color: #FF4500;
+            --dark-color: #000000;
+            --light-color: #FFFFFF;
+            --button-height: 50px;
+            --button-spacing: 10px;
+        }
+
         html, body {
             margin: 0;
             padding: 0;
@@ -30,7 +41,12 @@
             overflow: hidden;
             font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
             text-transform: none;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
+        
         a-scene {
             width: 100% !important;
             height: 100% !important;
@@ -38,81 +54,135 @@
             top: 0;
             left: 0;
             background: transparent;
+            z-index: 1;
         }
+        
         .arjs-loader {
             height: 100%;
             width: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.8);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #FF7518;
-            font-size: 1.5em;
+            color: var(--primary-color);
+            font-size: clamp(1.2em, 4vw, 1.8em);
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
             font-family: 'Comic Neue', cursive;
+            line-height: 1.4;
         }
+        
         .ui-btn {
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            padding: 16px 30px;
-            border-radius: 40px;
-            font-size: 1.2em;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: clamp(1em, 4vw, 1.2em);
             font-weight: bold;
             text-decoration: none;
             z-index: 1000;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             transition: all 0.2s ease;
             cursor: pointer;
             border: none;
             display: none;
             font-family: 'Comic Neue', cursive;
+            min-height: var(--button-height);
+            width: 80%;
+            max-width: 300px;
+            touch-action: manipulation;
         }
-        #playBtn  { bottom: 140px; background: linear-gradient(45deg, #FF7518, #000000); color: white; }
-        #stopBtn  { bottom: 140px; background: linear-gradient(45deg, #9932CC, #4B0082); color: white; }
-        #resetBtn { bottom: 70px;  background: linear-gradient(45deg, #FF4500, #8B0000); color: white; }
-        #soundBtn { bottom: 220px; background: linear-gradient(45deg, #32CD32, #006400); color: white; }
-        #langBtn  { bottom: 300px; background: linear-gradient(45deg, #A9A9A9, #696969); color: white; display: block; }
+        
+        .ui-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        #playBtn { 
+            bottom: calc(var(--button-height) * 3 + var(--button-spacing) * 3); 
+            background: linear-gradient(45deg, var(--primary-color), var(--dark-color)); 
+            color: var(--light-color); 
+        }
+        
+        #stopBtn { 
+            bottom: calc(var(--button-height) * 3 + var(--button-spacing) * 3); 
+            background: linear-gradient(45deg, var(--accent-color), #4B0082); 
+            color: var(--light-color); 
+        }
+        
+        #resetBtn { 
+            bottom: calc(var(--button-height) * 2 + var(--button-spacing) * 2); 
+            background: linear-gradient(45deg, var(--danger-color), #8B0000); 
+            color: var(--light-color); 
+        }
+        
+        #soundBtn { 
+            bottom: calc(var(--button-height) + var(--button-spacing)); 
+            background: linear-gradient(45deg, var(--secondary-color), #006400); 
+            color: var(--light-color); 
+        }
+        
+        #langBtn { 
+            bottom: var(--button-spacing); 
+            background: linear-gradient(45deg, #A9A9A9, #696969); 
+            color: var(--light-color); 
+            display: block; 
+        }
+        
         #youtubeBtn {
             position: fixed;
-            bottom: 15px;
-            left: 15px;
+            top: 15px;
+            right: 15px;
+            left: auto;
             transform: none;
-            padding: 12px 20px;
+            padding: 10px 16px;
             background: linear-gradient(45deg, #FF4500, #FF8C00);
-            color: white;
-            border-radius: 25px;
-            font-size: 0.95em;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: var(--light-color);
+            border-radius: 20px;
+            font-size: 0.9em;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
             display: none;
             font-family: 'Comic Neue', cursive;
             z-index: 1100;
             cursor: pointer;
             text-decoration: none;
+            width: auto;
+            min-height: auto;
         }
-        #youtubeBtn:hover {
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
-        }
+        
         .ui-info-text {
             position: fixed;
             left: 10px;
-            top: 10px;
-            transform: none;
             z-index: 500;
             font-family: 'Comic Neue', cursive;
             text-align: left;
             font-weight: bold;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+            margin: 0;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            font-size: clamp(1em, 4vw, 1.3em);
         }
-        #timerText { color: #FF7518; font-size: 1.4em; display: none; }
-        #scoreText { top: 50px; color: #32CD32; font-size: 1.4em; display: none; }
+        
+        #timerText { 
+            top: 10px; 
+            color: var(--primary-color); 
+            display: none; 
+        }
+        
+        #scoreText { 
+            top: 60px; 
+            color: var(--secondary-color); 
+            display: none; 
+        }
+        
         #canvasGameContainer {
             z-index: 1000;
             position: relative;
@@ -120,6 +190,7 @@
             height: 100%;
             pointer-events: none;
         }
+        
         #gameCanvas {
             position: absolute;
             top: 0;
@@ -129,28 +200,34 @@
             z-index: 500;
             pointer-events: auto;
         }
+        
         #endMessage {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.9);
-            color: #FF7518;
+            color: var(--primary-color);
             padding: 20px;
             border-radius: 15px;
             z-index: 10000;
-            font-size: 1.2em;
+            font-size: clamp(1em, 4vw, 1.3em);
             text-align: center;
             font-family: 'Comic Neue', cursive;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             display: none;
+            width: 80%;
+            max-width: 400px;
         }
+        
         #gameInstructions {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            color: white;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            color: var(--light-color);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -159,28 +236,110 @@
             padding: 20px;
             text-align: center;
             font-family: 'Comic Neue', cursive;
-            font-size: 1.4em;
+            font-size: clamp(1.1em, 4vw, 1.5em);
             line-height: 1.5;
+            box-sizing: border-box;
         }
+        
         #startGameBtn {
             margin-top: 25px;
             bottom: auto !important;
+            position: relative !important;
+            transform: none !important;
+            left: auto !important;
         }
+        
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+        
         .pulse {
             animation: pulse 2s infinite;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-height: 700px) {
+            :root {
+                --button-height: 45px;
+                --button-spacing: 8px;
+            }
+            
+            .ui-btn {
+                padding: 10px 20px;
+            }
+            
+            #timerText, #scoreText {
+                font-size: 1em;
+            }
+            
+            #timerText {
+                top: 5px;
+            }
+            
+            #scoreText {
+                top: 45px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ui-btn {
+                width: 90%;
+            }
+            
+            #youtubeBtn {
+                font-size: 0.8em;
+                padding: 8px 12px;
+            }
+        }
+        
+        /* Landscape mode adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .ui-btn {
+                width: auto;
+                padding: 8px 16px;
+                min-height: 40px;
+            }
+            
+            #playBtn, #stopBtn {
+                bottom: 120px;
+            }
+            
+            #resetBtn {
+                bottom: 70px;
+            }
+            
+            #soundBtn {
+                bottom: 20px;
+            }
+            
+            #langBtn {
+                display: none;
+            }
+            
+            #timerText, #scoreText {
+                font-size: 0.9em;
+            }
+            
+            #timerText {
+                top: 5px;
+            }
+            
+            #scoreText {
+                top: 35px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="arjs-loader" id="loader">
         <div class="pulse">🎃 Welcome to "Halloween Surprise!" AR Game 🦇</div>
-        <div style="margin-top: 20px; font-size: 1.1em;">
+        <div style="margin-top: 20px; font-size: 0.9em;">
             Point your camera at the marker to start! 👻
+        </div>
+        <div style="margin-top: 10px; font-size: 0.8em; color: #aaa;">
+            If AR doesn't work, try Chrome on Android
         </div>
     </div>
 
@@ -199,7 +358,7 @@
 
     <div id="canvasGameContainer" style="display: none;">
         <canvas id="gameCanvas"></canvas>
-        <button id="endBtn" class="ui-btn" style="bottom: 70px; display: none;">🛑 End</button>
+        <button id="endBtn" class="ui-btn" style="display: none;">🛑 End</button>
     </div>
 
     <div id="endMessage"></div>
@@ -297,6 +456,9 @@
                     loader.innerHTML = '<div style="color:red;">AR not supported. Starting canvas mode! Try Chrome on Android.</div>';
                     setTimeout(() => {
                         document.getElementById('playBtn').style.display = 'block';
+                        document.getElementById('soundBtn').style.display = 'block';
+                        document.getElementById('langBtn').style.display = 'block';
+                        document.getElementById('youtubeBtn').style.display = 'block';
                     }, 2000);
                 }
             }, 10000);
@@ -593,11 +755,20 @@
             inputHandler = (e) => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
-                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                let clientX, clientY;
+                
+                if (e.type === 'touchstart') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
                 const x = (clientX - rect.left) * (canvas.width / rect.width);
                 const y = (clientY - rect.top) * (canvas.height / rect.height);
 
+                let clicked = false;
                 emojis.forEach((emoji, idx) => {
                     if (emoji.isClicked || emoji.fadeOut > 0) return;
                     const dx = x - emoji.x;
@@ -613,15 +784,21 @@
                             clickSound.currentTime = 0;
                             clickSound.play().catch(() => {});
                         }
+                        clicked = true;
                         if (emojis.length < maxEmojisOnScreen) {
                             emojis.push(createEmoji());
                         }
                     }
                 });
+                
+                // Якщо нічого не клікнуто, додаємо нового емоці
+                if (!clicked && emojis.length < maxEmojisOnScreen) {
+                    emojis.push(createEmoji());
+                }
             };
 
             canvas.addEventListener('click', inputHandler);
-            canvas.addEventListener('touchstart', inputHandler);
+            canvas.addEventListener('touchstart', inputHandler, { passive: false });
 
             endBtnHandler = endGame;
             endBtn.addEventListener('click', endBtnHandler);
