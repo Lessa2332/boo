@@ -7,24 +7,32 @@
   <title>My Coloring Page — AR for Kids! 🎨</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖍️</text></svg>">
 
-  <!-- Preload -->
-  <link rel="preload" href="./7-targets.mind" as="fetch" type="application/octet-stream" crossorigin="anonymous" />
-  <link rel="preload" href="./bg-music.mp3" as="audio" />
-  <link rel="preload" href="./lab.mp3" as="audio" />
+  <!-- Виправлені preload запити -->
+  <link rel="preload" href="./7-targets.mind" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="./bg-music.mp3" as="audio" type="audio/mpeg" />
+  <link rel="preload" href="./lab.mp3" as="audio" type="audio/mpeg" />
 
   <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent;
+    }
+    
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
       background: #000;
       font-family: 'Comic Neue', cursive, sans-serif;
+      touch-action: manipulation;
     }
+    
     a-scene {
       position: fixed;
       top: 0;
@@ -33,13 +41,14 @@
       height: 100%;
       z-index: 1;
     }
+    
     #loader {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.95);
       color: white;
       display: flex;
       flex-direction: column;
@@ -48,17 +57,29 @@
       text-align: center;
       padding: 20px;
       z-index: 10;
-      font-size: 1.4em;
+      font-size: clamp(1.2em, 4vw, 1.6em);
       line-height: 1.4;
+      transition: opacity 0.3s ease;
     }
+    
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
     #loader h1 {
-      font-size: 1.8em;
+      font-size: clamp(1.4em, 5vw, 2em);
       margin-bottom: 15px;
       color: #FF6F61;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
+    
     #loader p {
       color: #FFD166;
+      font-size: clamp(1em, 3vw, 1.3em);
+      margin-bottom: 10px;
     }
+    
     #shopBtn {
       position: fixed;
       bottom: 20px;
@@ -69,35 +90,94 @@
       border: none;
       border-radius: 50px;
       padding: 14px 28px;
-      font-size: 1.2em;
+      font-size: clamp(1em, 4vw, 1.3em);
       font-weight: bold;
       cursor: pointer;
       z-index: 20;
       box-shadow: 0 6px 16px rgba(0,0,0,0.3);
       font-family: 'Comic Neue', cursive;
-      min-width: 220px;
+      min-width: min(220px, 80%);
+      transition: all 0.2s ease;
+      display: none;
     }
+    
     #shopBtn:active {
       transform: translateX(-50%) scale(0.96);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
     }
+    
+    #shopBtn.visible {
+      display: block;
+    }
+    
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-10px) rotate(5deg); }
+      66% { transform: translateY(-5px) rotate(-5deg); }
     }
+    
     #loader .emoji {
       animation: float 3s ease-in-out infinite;
-      font-size: 2.5em;
+      font-size: clamp(2em, 10vw, 4em);
       margin-bottom: 20px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    
+    .loading-dots:after {
+      content: '';
+      animation: dots 1.5s steps(5, end) infinite;
+    }
+    
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+    
+    /* Mobile optimizations */
+    @media (max-height: 600px) {
+      #loader {
+        padding: 10px;
+      }
+      
+      #loader .emoji {
+        margin-bottom: 10px;
+      }
+      
+      #shopBtn {
+        bottom: 10px;
+        padding: 10px 20px;
+      }
+    }
+    
+    @media (orientation: landscape) and (max-height: 500px) {
+      #loader {
+        flex-direction: row;
+        gap: 20px;
+      }
+      
+      #loader .emoji {
+        margin-bottom: 0;
+        font-size: 2.5em;
+      }
+      
+      #loader h1 {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+      }
     }
   </style>
 
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="loader">
     <div class="emoji">🖍️</div>
-    <h1>Point your camera at the coloring page!</h1>
-    <p>Magically bring your drawing to life! ✨</p>
+    <div>
+      <h1>Point your camera at the coloring page!</h1>
+      <p>Magically bring your drawing to life! ✨</p>
+      <p class="loading-dots" style="color: #aaa; margin-top: 10px;">Loading</p>
+    </div>
   </div>
 
   <a-scene
@@ -108,111 +188,235 @@
     renderer="colorManagement: true; physicallyCorrectLights: true;"
     embedded
   >
-    <a-assets timeout="30000">
+    <a-assets timeout="45000">
       <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
       <audio id="magic-sound" src="./lab.mp3" preload="auto"></audio>
-      <img id="logo1" src="./logo1.png">
-      <img id="logo2" src="./logo2.png">
-      <img id="logo3" src="./logo3.png">
-      <img id="logo4" src="./logo4.png">
-      <img id="logo5" src="./logo5.png">
-      <img id="logo6" src="./logo6.png">
-      <img id="logo7" src="./logo7.png">
+      <!-- Preload images -->
+      <img id="logo1" src="./logo1.png" crossorigin="anonymous">
+      <img id="logo2" src="./logo2.png" crossorigin="anonymous">
+      <img id="logo3" src="./logo3.png" crossorigin="anonymous">
+      <img id="logo4" src="./logo4.png" crossorigin="anonymous">
+      <img id="logo5" src="./logo5.png" crossorigin="anonymous">
+      <img id="logo6" src="./logo6.png" crossorigin="anonymous">
+      <img id="logo7" src="./logo7.png" crossorigin="anonymous">
     </a-assets>
 
-    <!-- Critical: camera must have position -->
-    <a-camera look-controls="enabled: false" position="0 0 0"></a-camera>
+    <a-camera 
+      look-controls="enabled: false" 
+      position="0 0 0"
+      wasd-controls="enabled: false"
+    ></a-camera>
 
-    <!-- 7 targets -->
+    <!-- 7 AR targets -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-image src="#logo1" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo1" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 1">
-      <a-image src="#logo2" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo2" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 2">
-      <a-image src="#logo3" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo3" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 3">
-      <a-image src="#logo4" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo4" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 4">
-      <a-image src="#logo5" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo5" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 5">
-      <a-image src="#logo6" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo6" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
+    
     <a-entity mindar-image-target="targetIndex: 6">
-      <a-image src="#logo7" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
-        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      <a-image src="#logo7" position="0 0 0" scale="1 1 1" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
       </a-image>
     </a-entity>
   </a-scene>
 
-  <button id="shopBtn" aria-label="Visit my Etsy shop">Shop 🛍️</button>
+  <button id="shopBtn" aria-label="Visit my Etsy shop">Shop My Coloring Pages 🛍️</button>
 
   <script>
+    // DOM elements
     const loader = document.getElementById('loader');
     const shopBtn = document.getElementById('shopBtn');
     const bgMusic = document.getElementById('bg-music');
     const magicSound = document.getElementById('magic-sound');
+    
+    // State variables
     let userInteracted = false;
+    let isTargetFound = false;
+    let audioContextResumed = false;
 
-    shopBtn.addEventListener('click', () => {
+    // Shop button handler
+    shopBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       window.open('https://smartlessa.etsy.com', '_blank', 'noopener,noreferrer');
     });
 
-    function unlockAudio() {
+    // Audio unlock function
+    async function unlockAudio() {
       if (userInteracted) return;
+      
       userInteracted = true;
+      
+      // Resume Audio Context if needed (for iOS)
+      if (typeof AudioContext !== 'undefined' && !audioContextResumed) {
+        try {
+          const context = new AudioContext();
+          if (context.state === 'suspended') {
+            await context.resume();
+          }
+          audioContextResumed = true;
+        } catch (e) {
+          console.log('AudioContext resume failed:', e);
+        }
+      }
+
+      // Unmute and play sounds
       [bgMusic, magicSound].forEach(audio => {
         if (audio) {
           audio.muted = false;
+          audio.volume = 0.7;
           audio.currentTime = 0;
         }
       });
-      if (magicSound) magicSound.play().catch(e => console.log("Sound play failed:", e));
-      if (bgMusic) bgMusic.play().catch(e => console.log("Music play failed:", e));
+
+      // Play magic sound on first interaction
+      try {
+        if (magicSound) {
+          await magicSound.play();
+        }
+      } catch (e) {
+        console.log('Magic sound play failed:', e);
+      }
+
+      // Show shop button
+      shopBtn.classList.add('visible');
     }
 
+    // Event listeners for first user interaction
     document.body.addEventListener('touchstart', unlockAudio, { once: true });
     document.body.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
 
-    // Wait for scene to load before attaching listeners
+    // Scene loaded handler
     document.querySelector('a-scene').addEventListener('loaded', () => {
+      console.log('A-Frame scene loaded successfully');
+      
       const targets = document.querySelectorAll('a-entity[mindar-image-target]');
-      let anyFound = false;
+      console.log(`Found ${targets.length} AR targets`);
 
-      targets.forEach(target => {
-        target.addEventListener('targetFound', () => {
-          if (!anyFound) {
-            anyFound = true;
-            loader.style.display = 'none';
+      // Fallback timeout if no targets are found
+      const fallbackTimeout = setTimeout(() => {
+        if (!isTargetFound) {
+          console.log('Fallback: No AR targets detected');
+          loader.innerHTML = `
+            <div class="emoji">🎨</div>
+            <div>
+              <h1>Welcome to Coloring AR!</h1>
+              <p>Point at a coloring page to see magic happen!</p>
+              <p style="color: #FF6F61; margin-top: 15px;">Try Chrome on Android for best experience</p>
+            </div>
+          `;
+          shopBtn.classList.add('visible');
+          unlockAudio();
+        }
+      }, 15000);
+
+      targets.forEach((target, index) => {
+        target.addEventListener('targetFound', (event) => {
+          console.log(`Target ${index} found`);
+          
+          if (!isTargetFound) {
+            isTargetFound = true;
+            clearTimeout(fallbackTimeout);
+            
+            // Hide loader with smooth transition
+            loader.classList.add('hidden');
+            
+            // Ensure audio is unlocked
             unlockAudio();
+            
+            // Play background music
+            if (bgMusic && userInteracted) {
+              bgMusic.loop = true;
+              bgMusic.play().catch(e => {
+                console.log('Background music play failed:', e);
+              });
+            }
+            
+            // Show shop button
+            shopBtn.classList.add('visible');
           }
         });
 
-        target.addEventListener('targetLost', () => {
-          const stillVisible = Array.from(targets).some(t => t.object3D.visible);
-          if (!stillVisible) {
-            anyFound = false;
-            loader.style.display = 'flex';
+        target.addEventListener('targetLost', (event) => {
+          console.log(`Target ${index} lost`);
+          
+          const anyTargetVisible = Array.from(targets).some(t => {
+            return t.getAttribute('visible') !== false;
+          });
+          
+          if (!anyTargetVisible && isTargetFound) {
+            console.log('All targets lost');
+            loader.classList.remove('hidden');
           }
         });
       });
     });
+
+    // Error handling
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+    });
+
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Pause audio when page is not visible
+        [bgMusic, magicSound].forEach(audio => {
+          if (audio && !audio.paused) {
+            audio.pause();
+          }
+        });
+      } else if (userInteracted && isTargetFound) {
+        // Resume audio when page becomes visible again
+        [bgMusic, magicSound].forEach(audio => {
+          if (audio) {
+            audio.play().catch(e => console.log('Audio resume failed:', e));
+          }
+        });
+      }
+    });
+
+    // Prevent zoom on double tap (mobile)
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (event) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+
   </script>
 </body>
 </html>
