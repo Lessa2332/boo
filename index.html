@@ -1,234 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎃</text></svg>">
-    <title>🎃 Halloween AR Markers 🦇</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Моя Розмальовка — AR для дітей! 🎨</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖍️</text></svg>">
 
-    <!-- Preload assets -->
-    <link rel="preload" href="./7-targets.mind" as="fetch" type="application/octet-stream" crossorigin="anonymous">
-    <link rel="preload" href="./bg-music.mp3" as="audio">
-    <link rel="preload" href="./lab.mp3" as="audio">
-    <link rel="preload" href="./logo1.png" as="image">
+  <!-- Preload -->
+  <link rel="preload" href="./7-targets.mind" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="./bg-music.mp3" as="audio" />
+  <link rel="preload" href="./lab.mp3" as="audio" />
 
-    <!-- A-Frame + MindAR -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js" defer></script>
+  <!-- A-Frame + MindAR -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Comic Neue', cursive, sans-serif;
-        }
-        a-scene {
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: transparent;
-        }
-        .arjs-loader {
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #FF7518;
-            font-size: 1.5em;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: 'Comic Neue', cursive;
-        }
-        #langBtn {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 30px;
-            background: linear-gradient(45deg, #A9A9A9, #696969);
-            color: white;
-            font-family: 'Comic Neue', cursive;
-            font-size: 1em;
-            border: none;
-            cursor: pointer;
-            z-index: 1000;
-        }
-        #youtubeBtn {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
-            background: linear-gradient(45deg, #FF4500, #FF8C00);
-            color: white;
-            border-radius: 25px;
-            font-size: 0.95em;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            font-family: 'Comic Neue', cursive;
-            z-index: 1100;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-    </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Comic Neue', cursive, sans-serif;
+    }
+    a-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      z-index: 10;
+      font-size: 1.4em;
+      line-height: 1.4;
+    }
+    #loader h1 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #FF6F61;
+    }
+    #loader p {
+      color: #FFD166;
+    }
+    .btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #FF6F61, #FF9E6D);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 28px;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      font-family: 'Comic Neue', cursive;
+      min-width: 220px;
+    }
+    .btn:active {
+      transform: translateX(-50%) scale(0.96);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    #loader .emoji {
+      animation: float 3s ease-in-out infinite;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+  </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="arjs-loader" id="loader">
-        <div class="pulse">🎃 Point your camera at a Halloween marker! 👻</div>
-    </div>
+  <div id="loader">
+    <div class="emoji">🖍️</div>
+    <h1>Наведи камеру на розмальовку!</h1>
+    <p>Зачаруй малюнок — і він оживе! ✨</p>
+  </div>
 
-    <a-scene
-        id="arScene"
-        mindar-image="imageTargetSrc: ./7-targets.mind;"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-        loading-screen="enabled: false"
-        embedded
-        renderer="colorManagement: true; physicallyCorrectLights: true;"
-    >
-        <a-assets timeout="30000">
-            <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
-            <audio id="logo-sound" src="./lab.mp3" preload="auto"></audio>
-            <img id="logo1" src="./logo1.png">
-            <img id="logo2" src="./logo2.png">
-            <img id="logo3" src="./logo3.png">
-            <img id="logo4" src="./logo4.png">
-            <img id="logo5" src="./logo5.png">
-            <img id="logo6" src="./logo6.png">
-            <img id="logo7" src="./logo7.png">
-        </a-assets>
+  <a-scene
+    mindar-image="imageTargetSrc: ./7-targets.mind;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    loading-screen="enabled: false"
+    renderer="colorManagement: true; physicallyCorrectLights: true;"
+    embedded
+  >
+    <a-assets timeout="30000">
+      <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
+      <audio id="magic-sound" src="./lab.mp3" preload="auto"></audio>
+      <img id="logo1" src="./logo1.png">
+      <img id="logo2" src="./logo2.png">
+      <img id="logo3" src="./logo3.png">
+      <img id="logo4" src="./logo4.png">
+      <img id="logo5" src="./logo5.png">
+      <img id="logo6" src="./logo6.png">
+      <img id="logo7" src="./logo7.png">
+    </a-assets>
 
-        <a-camera look-controls="enabled: false" position="0 0 0"></a-camera>
+    <a-camera look-controls="enabled: false"></a-camera>
 
-        <!-- 7 AR targets -->
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-image src="#logo1" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 1">
-            <a-image src="#logo2" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 2">
-            <a-image src="#logo3" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 3">
-            <a-image src="#logo4" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 4">
-            <a-image src="#logo5" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 5">
-            <a-image src="#logo6" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 6">
-            <a-image src="#logo7" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
-                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-            </a-image>
-        </a-entity>
-    </a-scene>
+    <!-- 7 targets -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-image src="#logo1" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-image src="#logo2" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-image src="#logo3" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-image src="#logo4" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 4">
+      <a-image src="#logo5" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 5">
+      <a-image src="#logo6" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+    <a-entity mindar-image-target="targetIndex: 6">
+      <a-image src="#logo7" position="0 0 0.05" scale="0.9 0.9 0.9" visible="true">
+        <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+      </a-image>
+    </a-entity>
+  </a-scene>
 
-    <button id="langBtn" class="ui-btn" aria-label="Switch Language">🌐 EN/UK</button>
-    <a href="https://www.youtube.com/@23smartlessa32" id="youtubeBtn" target="_blank" rel="noopener" aria-label="Author's YouTube">❤️ Author SmartLessa</a>
+  <button id="shopBtn" class="btn" aria-label="Відвідати магазин">Магазин 🛍️</button>
 
-    <script>
-        const loader = document.getElementById('loader');
-        const langBtn = document.getElementById('langBtn');
-        const bgMusic = document.getElementById('bg-music');
-        const logoSound = document.getElementById('logo-sound');
-        let userInteracted = false;
-        let currentLang = 'en';
+  <script>
+    const loader = document.getElementById('loader');
+    const shopBtn = document.getElementById('shopBtn');
+    const bgMusic = document.getElementById('bg-music');
+    const magicSound = document.getElementById('magic-sound');
+    let userInteracted = false;
 
-        const translations = {
-            en: {
-                loaderText: '🎃 Point your camera at a Halloween marker! 👻',
-                langBtn: '🌐 EN/UK'
-            },
-            uk: {
-                loaderText: '🎃 Наведи камеру на гелловінський маркер! 👻',
-                langBtn: '🌐 EN/UK'
-            }
-        };
+    // Відкрити Etsy
+    shopBtn.addEventListener('click', () => {
+      window.open('https://smartlessa.etsy.com', '_blank', 'noopener,noreferrer');
+    });
 
-        function updateLanguage() {
-            loader.querySelector('.pulse').textContent = translations[currentLang].loaderText;
-            langBtn.textContent = translations[currentLang].langBtn;
+    // Перший дотик — дозволити звук
+    function unlockAudio() {
+      if (userInteracted) return;
+      userInteracted = true;
+      [bgMusic, magicSound].forEach(audio => {
+        if (audio) {
+          audio.muted = false;
+          audio.currentTime = 0;
         }
+      });
+      if (magicSound) magicSound.play().catch(() => {});
+      if (bgMusic) bgMusic.play().catch(() => {});
+    }
 
-        updateLanguage();
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('click', unlockAudio, { once: true });
 
-        langBtn.addEventListener('click', () => {
-            currentLang = currentLang === 'en' ? 'uk' : 'en';
-            updateLanguage();
-        });
+    // Обробка маркерів
+    const targets = document.querySelectorAll('a-entity[mindar-image-target]');
+    let anyFound = false;
 
-        function playSoundOnce() {
-            if (!userInteracted) {
-                userInteracted = true;
-                if (logoSound) {
-                    logoSound.currentTime = 0;
-                    logoSound.play().catch(() => {});
-                }
-                if (bgMusic) {
-                    bgMusic.currentTime = 0;
-                    bgMusic.play().catch(() => {});
-                }
-            }
+    targets.forEach(target => {
+      target.addEventListener('targetFound', () => {
+        if (!anyFound) {
+          anyFound = true;
+          loader.style.display = 'none';
+          unlockAudio();
         }
+      });
 
-        // Play sound on first user interaction (e.g., tap anywhere)
-        document.body.addEventListener('touchstart', playSoundOnce, { once: true });
-        document.body.addEventListener('click', playSoundOnce, { once: true });
-
-        // Handle marker detection
-        const targets = document.querySelectorAll('a-entity[mindar-image-target]');
-        targets.forEach((target, index) => {
-            target.addEventListener('targetFound', () => {
-                loader.style.display = 'none';
-                playSoundOnce(); // Ensure sound plays on detection
-            });
-
-            target.addEventListener('targetLost', () => {
-                // Optional: show loader again if all markers lost
-                let anyFound = Array.from(targets).some(t => t.object3D.visible);
-                if (!anyFound) {
-                    loader.style.display = 'flex';
-                }
-            });
-        });
-    </script>
+      target.addEventListener('targetLost', () => {
+        // Перевіряємо, чи хоча б один маркер ще видимий
+        const stillVisible = Array.from(targets).some(t => t.object3D.visible);
+        if (!stillVisible) {
+          anyFound = false;
+          loader.style.display = 'flex';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
