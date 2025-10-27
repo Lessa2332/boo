@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Моя Розмальовка — AR для дітей! 🎨</title>
+  <title>My Coloring Page — AR for Kids! 🎨</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖍️</text></svg>">
 
   <!-- Preload -->
@@ -95,8 +95,8 @@
 <body>
   <div id="loader">
     <div class="emoji">🖍️</div>
-    <h1>Наведи камеру на розмальовку!</h1>
-    <p>Зачаруй малюнок — і він оживе! ✨</p>
+    <h1>Point your camera at the coloring page!</h1>
+    <p>Magically bring your drawing to life! ✨</p>
   </div>
 
   <a-scene
@@ -159,7 +159,7 @@
     </a-entity>
   </a-scene>
 
-  <button id="shopBtn" class="btn" aria-label="Відвідати магазин">Магазин 🛍️</button>
+  <button id="shopBtn" class="btn" aria-label="Visit my Etsy shop">Shop 🛍️</button>
 
   <script>
     const loader = document.getElementById('loader');
@@ -168,12 +168,12 @@
     const magicSound = document.getElementById('magic-sound');
     let userInteracted = false;
 
-    // Відкрити Etsy
+    // Open Etsy shop
     shopBtn.addEventListener('click', () => {
       window.open('https://smartlessa.etsy.com', '_blank', 'noopener,noreferrer');
     });
 
-    // Перший дотик — дозволити звук
+    // Unlock audio on first interaction
     function unlockAudio() {
       if (userInteracted) return;
       userInteracted = true;
@@ -190,7 +190,7 @@
     document.body.addEventListener('touchstart', unlockAudio, { once: true });
     document.body.addEventListener('click', unlockAudio, { once: true });
 
-    // Обробка маркерів
+    // Handle marker detection
     const targets = document.querySelectorAll('a-entity[mindar-image-target]');
     let anyFound = false;
 
@@ -204,7 +204,7 @@
       });
 
       target.addEventListener('targetLost', () => {
-        // Перевіряємо, чи хоча б один маркер ще видимий
+        // Check if any target is still visible
         const stillVisible = Array.from(targets).some(t => t.object3D.visible);
         if (!stillVisible) {
           anyFound = false;
