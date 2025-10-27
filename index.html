@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎃</text></svg>">
     <title>🎃 AR Game "Halloween Surprise!" — for Halloween! 🦇</title>
 
     <!-- A-Frame + MindAR -->
@@ -203,18 +204,18 @@
         embedded
         renderer="colorManagement: true; physicallyCorrectLights: true;"
     >
-        <a-assets>
-            <audio id="bg-music" src="./bg-music.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
-            <audio id="click-sound" src="./click-sound.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
-            <audio id="logo-sound" src="./lab.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
+        <a-assets timeout="30000">
+            <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
+            <audio id="click-sound" src="./click-sound.mp3" preload="auto"></audio>
+            <audio id="logo-sound" src="./lab.mp3" preload="auto"></audio>
             <!-- 7 логотипів -->
-            <img id="logo1" src="./logo1.png" crossorigin="anonymous">
-            <img id="logo2" src="./logo2.png" crossorigin="anonymous">
-            <img id="logo3" src="./logo3.png" crossorigin="anonymous">
-            <img id="logo4" src="./logo4.png" crossorigin="anonymous">
-            <img id="logo5" src="./logo5.png" crossorigin="anonymous">
-            <img id="logo6" src="./logo6.png" crossorigin="anonymous">
-            <img id="logo7" src="./logo7.png" crossorigin="anonymous">
+            <img id="logo1" src="./logo1.png">
+            <img id="logo2" src="./logo2.png">
+            <img id="logo3" src="./logo3.png">
+            <img id="logo4" src="./logo4.png">
+            <img id="logo5" src="./logo5.png">
+            <img id="logo6" src="./logo6.png">
+            <img id="logo7" src="./logo7.png">
         </a-assets>
 
         <a-camera look-controls="enabled: false" position="0 0 0">
@@ -273,6 +274,11 @@
     <a href="https://www.youtube.com/@23smartlessa32" id="youtubeBtn" target="_blank" aria-label="Author's YouTube">❤️ Author SmartLessa</a>
 
     <script>
+        // Обробка помилок
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+
         function fixHeight() {
             document.body.style.height = window.innerHeight + 'px';
         }
@@ -299,7 +305,7 @@
         let emojis = [];
         let startTime = null;
         let inputHandler = null;
-        let currentLang = 'en'; // ✅ завжди англійська при старті
+        let currentLang = 'en';
 
         const translations = {
             en: {
@@ -340,7 +346,7 @@
             document.title = translations[currentLang].title;
             loader.querySelector('.pulse').textContent = translations[currentLang].loaderWelcome;
             loader.querySelector('div[style]').textContent = translations[currentLang].loaderInstruction;
-            timerText.textContent = translations[currentLang].timer + '60';
+            timerText.textContent = translations[currentLang].timer + '01:00';
             scoreText.textContent = translations[currentLang].score + '0';
             playBtn.textContent = translations[currentLang].playBtn;
             stopBtn.textContent = translations[currentLang].stopBtn;
@@ -362,7 +368,6 @@
                 if (audio) {
                     audio.pause();
                     audio.currentTime = 0;
-                    audio.muted = true;
                 }
             });
         }
@@ -457,7 +462,7 @@
             emojis = [];
             startTime = null;
             scoreText.textContent = translations[currentLang].score + '0';
-            timerText.textContent = translations[currentLang].timer + '60';
+            timerText.textContent = translations[currentLang].timer + '01:00';
             playBtn.style.display = 'block';
             soundBtn.style.display = 'block';
             langBtn.style.display = 'block';
@@ -505,7 +510,7 @@
 
             startTime = Date.now();
             timerText.style.display = 'block';
-            timerText.textContent = translations[currentLang].timer + '60';
+            timerText.textContent = translations[currentLang].timer + '01:00';
             scoreText.style.display = 'block';
             scoreText.textContent = translations[currentLang].score + score;
 
@@ -540,4 +545,86 @@
                         if (emojis.length < maxEmojisOnScreen) {
                             emojis.push(createEmoji());
                         }
-      
+                    }
+                });
+            };
+
+            canvas.addEventListener('click', inputHandler);
+            canvas.addEventListener('touchstart', inputHandler);
+
+            // Додаємо обробник для кнопки End
+            document.getElementById('endBtn').addEventListener('click', endGame);
+
+            function gameLoop() {
+                if (!isGameRunning) return;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const currentTime = Date.now();
+                const elapsed = Math.floor((currentTime - startTime) / 1000);
+                const remaining = Math.max(0, 60 - elapsed);
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerText.textContent = translations[currentLang].timer + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+
+                if (remaining <= 0) {
+                    endGame();
+                    return;
+                }
+
+                emojis.forEach((emoji, index) => {
+                    if (emoji.fadeOut > 0) {
+                        emoji.fadeOut -= 0.02;
+                        if (emoji.fadeOut <= 0) {
+                            emojis.splice(index, 1);
+                            emojis.push(createEmoji());
+                            return;
+                        }
+                    }
+
+                    if (!emoji.isClicked) {
+                        emoji.x += emoji.vx;
+                        emoji.y += emoji.vy;
+
+                        if (emoji.x < 0 || emoji.x > canvas.width) emoji.vx *= -1;
+                        if (emoji.y < 0 || emoji.y > canvas.height) emoji.vy *= -1;
+                    }
+
+                    ctx.globalAlpha = emoji.fadeOut > 0 ? emoji.fadeOut : 1;
+                    ctx.font = `${emoji.size}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(emoji.value, emoji.x, emoji.y);
+                });
+
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(gameLoop);
+            }
+
+            function endGame() {
+                isGameRunning = false;
+                stopBtn.style.display = 'none';
+                resetBtn.style.display = 'block';
+                endMessage.textContent = translations[currentLang].endMessage.replace('${score}', score);
+                endMessage.style.display = 'block';
+                
+                if (bgMusic) {
+                    bgMusic.pause();
+                    bgMusic.currentTime = 0;
+                }
+            }
+
+            gameLoop();
+        }
+
+        // Перевірка завантаження
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+        });
+
+        scene.addEventListener('loaded', function() {
+            console.log('A-Frame scene loaded');
+        });
+    </script>
+</body>
+</html>
