@@ -48,8 +48,7 @@
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            text-transform: none;
+            font-family: 'Comic Neue', cursive;
         }
         .ui-btn {
             position: fixed;
@@ -66,18 +65,18 @@
             cursor: pointer;
             border: none;
             display: none;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            text-transform: none;
+            font-family: 'Comic Neue', cursive;
         }
-        #playBtn { bottom: 180px; background: linear-gradient(45deg, #FF7518, #000000); color: white; }
-        #stopBtn { bottom: 180px; background: linear-gradient(45deg, #9932CC, #4B0082); color: white; }
-        #resetBtn { bottom: 100px; background: linear-gradient(45deg, #FF4500, #8B0000); color: white; }
-        #soundBtn { bottom: 260px; background: linear-gradient(45deg, #32CD32, #006400); color: white; }
-        #langBtn { bottom: 340px; background: linear-gradient(45deg, #A9A9A9, #696969); color: white; display: none; }
+        /* Зміщені нижче, щоб не заважати центру */
+        #playBtn  { bottom: 140px; background: linear-gradient(45deg, #FF7518, #000000); color: white; }
+        #stopBtn  { bottom: 140px; background: linear-gradient(45deg, #9932CC, #4B0082); color: white; }
+        #resetBtn { bottom: 70px;  background: linear-gradient(45deg, #FF4500, #8B0000); color: white; }
+        #soundBtn { bottom: 220px; background: linear-gradient(45deg, #32CD32, #006400); color: white; }
+        #langBtn  { bottom: 300px; background: linear-gradient(45deg, #A9A9A9, #696969); color: white; display: block; }
         #youtubeBtn {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 15px;
+            left: 15px;
             transform: none;
             padding: 12px 20px;
             background: linear-gradient(45deg, #FF4500, #FF8C00);
@@ -86,11 +85,10 @@
             font-size: 0.95em;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             display: none;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Comic Neue', cursive;
             z-index: 1100;
             cursor: pointer;
             text-decoration: none;
-            text-transform: none;
         }
         #youtubeBtn:hover {
             box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
@@ -101,17 +99,26 @@
             top: 10px;
             transform: none;
             z-index: 500;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Comic Neue', cursive;
             text-align: left;
             font-weight: bold;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
-            text-transform: none;
         }
         #timerText { color: #FF7518; font-size: 1.4em; display: none; }
         #scoreText { top: 50px; color: #32CD32; font-size: 1.4em; display: none; }
         #canvasGameContainer {
             z-index: 1000;
             position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1001;
         }
         #endMessage {
             position: fixed;
@@ -125,9 +132,30 @@
             z-index: 10000;
             font-size: 1.2em;
             text-align: center;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+            font-family: 'Comic Neue', cursive;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             display: none;
+        }
+        #gameInstructions {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Comic Neue', cursive;
+            font-size: 1.4em;
+            line-height: 1.5;
+        }
+        #startGameBtn {
+            margin-top: 25px;
+            bottom: auto !important;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -147,18 +175,28 @@
         </div>
     </div>
 
+    <div id="gameInstructions">
+        <div>👋 Hi there, friend!</div>
+        <div style="margin: 20px 0;">
+            Do you see scary emojis?<br>
+            Tap them — and they become happy! 🎃<br>
+            Try to cheer up as many as you can in 60 seconds!
+        </div>
+        <button id="startGameBtn" class="ui-btn">I'm ready! 🚀</button>
+    </div>
+
     <p id="timerText" class="ui-info-text">⏳ Time: 01:00</p>
     <p id="scoreText" class="ui-info-text">🌟 Monsters: 0</p>
 
     <div id="canvasGameContainer" style="display: none;">
         <canvas id="gameCanvas"></canvas>
-        <button id="endBtn" class="ui-btn">🛑 End</button>
+        <button id="endBtn" class="ui-btn" style="bottom: 70px;">🛑 End</button>
     </div>
 
     <div id="endMessage"></div>
 
     <a-scene
-        mindar-image="imageTargetSrc: ./targets.mind;"
+        mindar-image="imageTargetSrc: ./7-targets.mind;"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
         loading-screen="enabled: false"
@@ -169,13 +207,17 @@
             <audio id="bg-music" src="./bg-music.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
             <audio id="click-sound" src="./click-sound.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
             <audio id="logo-sound" src="./lab.mp3" preload="auto" muted playsinline crossorigin="anonymous"></audio>
-            <img id="logo-img" src="./logo.png" crossorigin="anonymous" alt="Game Logo">
+            <!-- 7 логотипів -->
+            <img id="logo1" src="./logo1.png" crossorigin="anonymous">
+            <img id="logo2" src="./logo2.png" crossorigin="anonymous">
+            <img id="logo3" src="./logo3.png" crossorigin="anonymous">
+            <img id="logo4" src="./logo4.png" crossorigin="anonymous">
+            <img id="logo5" src="./logo5.png" crossorigin="anonymous">
+            <img id="logo6" src="./logo6.png" crossorigin="anonymous">
+            <img id="logo7" src="./logo7.png" crossorigin="anonymous">
         </a-assets>
 
-        <a-camera
-            look-controls="enabled: false"
-            position="0 0 0"
-        >
+        <a-camera look-controls="enabled: false" position="0 0 0">
             <a-cursor
                 raycaster="objects: .emoji;"
                 cursor="fuse: false; maxDistance: 10"
@@ -185,24 +227,41 @@
             ></a-cursor>
         </a-camera>
 
+        <!-- 7 AR targets -->
         <a-entity mindar-image-target="targetIndex: 0">
-            <a-image
-                id="logo-image"
-                src="#logo-img"
-                position="0 0 0.05"
-                rotation="30 0 0"
-                scale="0.8 0.8 0.8"
-                visible="true"
-            >
-                <a-animation
-                    attribute="rotation"
-                    to="30 360 0"
-                    dur="5000"
-                    repeat="indefinite"
-                    easing="linear"
-                ></a-animation>
+            <a-image src="#logo1" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
             </a-image>
-            <a-entity id="game-elements" visible="false"></a-entity>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 1">
+            <a-image src="#logo2" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 2">
+            <a-image src="#logo3" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 3">
+            <a-image src="#logo4" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 4">
+            <a-image src="#logo5" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 5">
+            <a-image src="#logo6" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
+        </a-entity>
+        <a-entity mindar-image-target="targetIndex: 6">
+            <a-image src="#logo7" position="0 0 0.05" rotation="30 0 0" scale="0.8 0.8 0.8" visible="true">
+                <a-animation attribute="rotation" to="30 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+            </a-image>
         </a-entity>
     </a-scene>
 
@@ -211,7 +270,7 @@
     <button id="resetBtn" class="ui-btn" aria-label="Reset Game">🔄 Try Again!</button>
     <button id="soundBtn" class="ui-btn" style="display: none;" aria-label="Enable Sound">🔊 Enable Sound</button>
     <button id="langBtn" class="ui-btn" aria-label="Switch Language">🌐 EN/UK</button>
-    <a href="https://www.youtube.com/@23smartlessa32?si=d3NhKDot8U8Mc2Hi" id="youtubeBtn" target="_blank" aria-label="Author's YouTube">❤️ Author SmartLessa</a>
+    <a href="https://www.youtube.com/@23smartlessa32" id="youtubeBtn" target="_blank" aria-label="Author's YouTube">❤️ Author SmartLessa</a>
 
     <script>
         function fixHeight() {
@@ -221,15 +280,12 @@
         window.addEventListener('resize', fixHeight);
 
         const loader = document.querySelector('#loader');
-        const targetEntity = document.querySelector('a-entity[mindar-image-target]');
-        const logoImage = document.querySelector('#logo-image');
         const playBtn = document.querySelector('#playBtn');
         const stopBtn = document.querySelector('#stopBtn');
         const resetBtn = document.querySelector('#resetBtn');
         const soundBtn = document.querySelector('#soundBtn');
         const langBtn = document.querySelector('#langBtn');
         const youtubeBtn = document.querySelector('#youtubeBtn');
-        const gameElements = document.querySelector('#game-elements');
         const timerText = document.getElementById('timerText');
         const scoreText = document.getElementById('scoreText');
         const bgMusic = document.querySelector('#bg-music');
@@ -239,12 +295,11 @@
         const scene = document.querySelector('a-scene');
 
         let isGameRunning = false;
-        let arStarted = false;
         let score = 0;
         let emojis = [];
         let startTime = null;
         let inputHandler = null;
-        let currentLang = navigator.language.startsWith('uk') ? 'uk' : 'en';
+        let currentLang = 'en'; // ✅ завжди англійська при старті
 
         const translations = {
             en: {
@@ -329,36 +384,38 @@
             soundBtn.style.display = 'none';
         });
 
-        targetEntity.addEventListener('targetFound', () => {
-            arStarted = true;
-            loader.style.display = 'none';
-            if (!isGameRunning) {
-                playBtn.style.display = 'block';
-                soundBtn.style.display = 'block';
-                langBtn.style.display = 'block';
-                youtubeBtn.style.display = 'block';
-                if (logoImage) logoImage.setAttribute('visible', 'true');
-            }
+        // Обробка всіх 7 маркерів
+        const targets = document.querySelectorAll('a-entity[mindar-image-target]');
+        targets.forEach(target => {
+            target.addEventListener('targetFound', () => {
+                loader.style.display = 'none';
+                if (!isGameRunning) {
+                    playBtn.style.display = 'block';
+                    soundBtn.style.display = 'block';
+                    langBtn.style.display = 'block';
+                    youtubeBtn.style.display = 'block';
+                }
+            });
+
+            target.addEventListener('targetLost', () => {
+                if (isGameRunning) return;
+                playBtn.style.display = 'none';
+                soundBtn.style.display = 'none';
+                langBtn.style.display = 'none';
+                youtubeBtn.style.display = 'none';
+                resetBtn.style.display = 'none';
+                timerText.style.display = 'none';
+                scoreText.style.display = 'none';
+            });
         });
 
-        targetEntity.addEventListener('targetLost', () => {
-            if (isGameRunning) return;
-            playBtn.style.display = 'none';
-            soundBtn.style.display = 'none';
-            langBtn.style.display = 'none';
-            youtubeBtn.style.display = 'none';
-            resetBtn.style.display = 'none';
-            if (logoImage) logoImage.setAttribute('visible', 'true');
-            gameElements.setAttribute('visible', 'false');
-            timerText.style.display = 'none';
-            scoreText.style.display = 'none';
-        });
+        // Інструкція перед грою
+        function showInstructions() {
+            document.getElementById('gameInstructions').style.display = 'flex';
+        }
 
-        playBtn.addEventListener('click', startCanvasGame);
-        stopBtn.addEventListener('click', stopGame);
-        resetBtn.addEventListener('click', resetGame);
-
-        function startCanvasGame() {
+        document.getElementById('startGameBtn').addEventListener('click', () => {
+            document.getElementById('gameInstructions').style.display = 'none';
             isGameRunning = true;
             playBtn.style.display = 'none';
             soundBtn.style.display = 'none';
@@ -366,12 +423,15 @@
             youtubeBtn.style.display = 'none';
             stopBtn.style.display = 'block';
             resetBtn.style.display = 'none';
-            if (logoImage) logoImage.setAttribute('visible', 'false');
             document.querySelector('a-scene').style.display = 'none';
             scene.pause();
             document.getElementById('canvasGameContainer').style.display = 'block';
             initCanvasGame();
-        }
+        });
+
+        playBtn.addEventListener('click', showInstructions);
+        stopBtn.addEventListener('click', stopGame);
+        resetBtn.addEventListener('click', resetGame);
 
         function stopGame() {
             if (!isGameRunning) return;
@@ -385,10 +445,9 @@
             document.getElementById('canvasGameContainer').style.display = 'none';
             document.querySelector('a-scene').style.display = 'block';
             scene.play();
-            if (logoImage) logoImage.setAttribute('visible', 'true');
             timerText.style.display = 'none';
             scoreText.style.display = 'none';
-            if (endMessage) endMessage.style.display = 'none';
+            endMessage.style.display = 'none';
             stopAllAudio();
         }
 
@@ -404,7 +463,6 @@
             langBtn.style.display = 'block';
             youtubeBtn.style.display = 'block';
             resetBtn.style.display = 'none';
-            if (logoImage) logoImage.setAttribute('visible', 'true');
         }
 
         function initCanvasGame() {
@@ -482,88 +540,4 @@
                         if (emojis.length < maxEmojisOnScreen) {
                             emojis.push(createEmoji());
                         }
-                    }
-                });
-            };
-
-            canvas.addEventListener('click', inputHandler);
-            canvas.addEventListener('touchstart', inputHandler, { passive: false });
-
-            function animate() {
-                if (!isGameRunning) return;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                emojis = emojis.filter(emoji => emoji.fadeOut > 0 || !emoji.isClicked);
-                emojis.forEach(emoji => {
-                    if (emoji.isClicked && emoji.fadeOut > 0) {
-                        emoji.fadeOut -= 0.1;
-                        ctx.globalAlpha = emoji.fadeOut;
-                    } else if (!emoji.isClicked) {
-                        emoji.x += emoji.vx;
-                        emoji.y += emoji.vy;
-                        if (emoji.x < 0 || emoji.x > canvas.width) emoji.vx *= -1;
-                        if (emoji.y < 0 || emoji.y > canvas.height) emoji.vy *= -1;
-                    }
-
-                    ctx.font = `${emoji.size}px 'Comic Neue', 'Comic Sans MS', cursive, sans-serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillStyle = emoji.isClicked ? '#FF7518' : '#FFFFFF';
-                    ctx.fillText(emoji.value, emoji.x, emoji.y);
-                    ctx.globalAlpha = 1;
-                });
-
-                if (emojis.length < maxEmojisOnScreen && emojis.every(e => !e.isClicked || e.fadeOut > 0)) {
-                    emojis.push(createEmoji());
-                }
-
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const remaining = 60 - elapsed;
-                if (remaining <= 0) {
-                    endCanvasGame();
-                    return;
-                }
-                timerText.textContent = translations[currentLang].timer + String(remaining).padStart(2, '0');
-
-                requestAnimationFrame(animate);
-            }
-
-            function endCanvasGame() {
-                isGameRunning = false;
-                stopBtn.style.display = 'none';
-                resetBtn.style.display = 'block';
-                timerText.style.display = 'none';
-                scoreText.style.display = 'none';
-                endMessage.textContent = translations[currentLang].endMessage.replace('${score}', score);
-                endMessage.style.display = 'block';
-                stopAllAudio();
-                if (navigator.share) {
-                    navigator.share({
-                        title: translations[currentLang].shareTitle,
-                        text: translations[currentLang].shareText.replace('${score}', score)
-                    }).catch(() => {});
-                }
-                setTimeout(() => {
-                    endMessage.style.display = 'none';
-                    stopGame();
-                }, 5000);
-            }
-
-            document.getElementById('endBtn').addEventListener('click', endCanvasGame);
-            requestAnimationFrame(animate);
-        }
-
-        // Fallback if no AR support
-        if (typeof AFRAME !== 'undefined' && AFRAME.utils && AFRAME.utils.device) {
-            if (!AFRAME.utils.device.checkARSupport()) {
-                alert(currentLang === 'en'
-                    ? 'Your device does not support AR. Please try on a mobile device with camera.'
-                    : 'Ваш пристрій не підтримує AR. Спробуйте на мобільному пристрої з камерою.'
-                );
-            }
-        }
-    </script>
-</body>
-</html>
-
+      
