@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#000000">
-    <title>🎮 AR Monster Party - Interactive Fun! 🎉</title>
+    <title>🎮 AR Monster Party - Endless Halloween Fun! 🎃</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👾</text></svg>">
 
-    <!-- A-Frame + MindAR (без пробілів!) -->
+    <!-- A-Frame + MindAR -->
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -25,34 +23,21 @@
             touch-action: manipulation;
         }
         
-        a-scene { 
-            position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; z-index: 2; 
-            background: transparent !important;
-        }
-        
-        /* Scanning Overlay */
-        #scanningOverlay {
+        /* Video background */
+        #videoBackground {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            color: #FFD166;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            z-index: 999;
-            pointer-events: none;
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
+            object-fit: cover;
+            z-index: 0;
         }
         
-        #scanningOverlay.scanning {
-            display: flex;
+        a-scene { 
+            position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; z-index: 2; 
+            background: transparent !important;
         }
         
         /* Game UI */
@@ -69,54 +54,12 @@
             backdrop-filter: blur(10px);
         }
         
-        #tapCounter {
+        #funCounter {
             position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.7); color: #FF6F61;
+            background: rgba(0,0,0,0.7); color: #06D6A0;
             padding: 15px; border-radius: 20px; font-size: 1.4em;
             font-weight: bold;
             backdrop-filter: blur(10px);
-        }
-        
-        /* Control buttons */
-        .control-btn {
-            position: absolute;
-            background: rgba(0,0,0,0.7); 
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5em;
-            cursor: pointer;
-            pointer-events: auto;
-            z-index: 20;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .control-btn:active {
-            transform: scale(0.9);
-        }
-        
-        #soundBtn {
-            bottom: 100px;
-            right: 20px;
-            background: rgba(255,215,102,0.9);
-        }
-        
-        #stopBtn {
-            bottom: 20px;
-            right: 20px;
-            background: rgba(239,71,111,0.9);
-        }
-        
-        #soundBtn.muted {
-            background: rgba(128,128,128,0.7);
-            opacity: 0.7;
         }
         
         #instructions {
@@ -139,36 +82,20 @@
         }
         
         .gameBtn:active { transform: translateX(-50%) scale(0.95); }
-        
-        #iosMessage {
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: #FFD166;
-            padding: 15px 20px;
-            border-radius: 15px;
-            text-align: center;
-            font-size: 1.1em;
-            display: none;
-            backdrop-filter: blur(10px);
-            border: 2px solid #FF6F61;
-            max-width: 80%;
-            z-index: 30;
-        }
-        
+
         /* Monster icons */
         .tap-icon {
-            position: absolute; width: 80px; height: 80px;
+            position: absolute; width: 70px; height: 70px;
             background: rgba(255,255,255,0.95); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 2em; box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            font-size: 1.8em; box-shadow: 0 6px 20px rgba(0,0,0,0.4);
             cursor: pointer; pointer-events: auto; z-index: 20;
             border: 3px solid;
             animation: floatTap 2s ease-in-out infinite;
+            transition: all 0.3s ease;
         }
         
+        /* Different colors for each monster */
         .tap-icon-0 { border-color: #FF6F61; background: rgba(255,111,97,0.9); }
         .tap-icon-1 { border-color: #FFD166; background: rgba(255,209,102,0.9); }
         .tap-icon-2 { border-color: #06D6A0; background: rgba(6,214,160,0.9); }
@@ -177,6 +104,30 @@
         .tap-icon-5 { border-color: #9B5DE5; background: rgba(155,93,229,0.9); }
         .tap-icon-6 { border-color: #00BBF9; background: rgba(0,187,249,0.9); }
         
+        .tap-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        /* Click effects with different colors */
+        .click-effect {
+            position: absolute; width: 80px; height: 80px;
+            border-radius: 50%; pointer-events: none; z-index: 100;
+            animation: clickAnim 0.8s ease-out forwards;
+        }
+        
+        .click-effect-0 { background: radial-gradient(circle, rgba(255,111,97,0.8) 0%, rgba(255,111,97,0) 70%); }
+        .click-effect-1 { background: radial-gradient(circle, rgba(255,209,102,0.8) 0%, rgba(255,209,102,0) 70%); }
+        .click-effect-2 { background: radial-gradient(circle, rgba(6,214,160,0.8) 0%, rgba(6,214,160,0) 70%); }
+        .click-effect-3 { background: radial-gradient(circle, rgba(17,138,178,0.8) 0%, rgba(17,138,178,0) 70%); }
+        .click-effect-4 { background: radial-gradient(circle, rgba(239,71,111,0.8) 0%, rgba(239,71,111,0) 70%); }
+        .click-effect-5 { background: radial-gradient(circle, rgba(155,93,229,0.8) 0%, rgba(155,93,229,0) 70%); }
+        .click-effect-6 { background: radial-gradient(circle, rgba(0,187,249,0.8) 0%, rgba(0,187,249,0) 70%); }
+        
+        @keyframes clickAnim {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
         @keyframes floatTap {
             0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
             25% { transform: translateY(-15px) rotate(-5deg) scale(1.05); }
@@ -184,26 +135,7 @@
             75% { transform: translateY(-10px) rotate(-3deg) scale(1.05); }
         }
         
-        .click-effect {
-            position: absolute; width: 80px; height: 80px;
-            border-radius: 50%; pointer-events: none; z-index: 100;
-            animation: clickAnim 0.8s ease-out forwards;
-        }
-        
-        .click-effect-0 { background: radial-gradient(circle, rgba(255,111,97,0.8) 0%, transparent 70%); }
-        .click-effect-1 { background: radial-gradient(circle, rgba(255,209,102,0.8) 0%, transparent 70%); }
-        .click-effect-2 { background: radial-gradient(circle, rgba(6,214,160,0.8) 0%, transparent 70%); }
-        .click-effect-3 { background: radial-gradient(circle, rgba(17,138,178,0.8) 0%, transparent 70%); }
-        .click-effect-4 { background: radial-gradient(circle, rgba(239,71,111,0.8) 0%, transparent 70%); }
-        .click-effect-5 { background: radial-gradient(circle, rgba(155,93,229,0.8) 0%, transparent 70%); }
-        .click-effect-6 { background: radial-gradient(circle, rgba(0,187,249,0.8) 0%, transparent 70%); }
-        
-        @keyframes clickAnim {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-        
-        .monster-dance { animation: monsterDance 1s ease; }
+        /* Monster animations */
         @keyframes monsterDance {
             0% { transform: scale(1) rotate(0deg) translateY(0); }
             25% { transform: scale(1.2) rotate(-10deg) translateY(-10px); }
@@ -211,65 +143,83 @@
             75% { transform: scale(1.1) rotate(-5deg) translateY(-5px); }
             100% { transform: scale(1) rotate(0deg) translateY(0); }
         }
+        
+        .monster-dance { animation: monsterDance 1s ease; }
+        
+        /* Monster trail effect */
+        .monster-trail {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            animation: trailFade 0.6s ease-out forwards;
+        }
+        
+        @keyframes trailFade {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(0.5); opacity: 0; }
+        }
+        
+        /* Active monster highlight */
+        .active-monster {
+            filter: drop-shadow(0 0 15px gold) brightness(1.3);
+        }
+
+        /* Celebration effects */
+        .celebration {
+            position: absolute;
+            font-size: 2em;
+            font-weight: bold;
+            z-index: 50;
+            pointer-events: none;
+            animation: celebrate 2s ease-out forwards;
+        }
+
+        @keyframes celebrate {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { transform: translateY(-50px) scale(1.2); opacity: 1; }
+            80% { transform: translateY(-150px) scale(1); opacity: 1; }
+            100% { transform: translateY(-200px) scale(0.8); opacity: 0; }
+        }
     </style>
 
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Scanning Overlay -->
-    <div id="scanningOverlay">
-        <div style="font-size: 2em; margin-bottom: 15px;">🔍</div>
-        <div>Point camera at the coloring page...</div>
-        <div style="font-size: 0.8em; margin-top: 10px; color: #FF6F61;">
-            Make sure it's well-lit and steady!
-        </div>
-    </div>
+    <!-- Video Background -->
+    <video id="videoBackground" autoplay muted playsinline></video>
 
     <!-- Game UI -->
     <div id="gameUI">
-        <div id="scorePanel">🌟 Score: <span id="score">0</span></div>
-        <div id="tapCounter">👆 Taps: <span id="taps">0</span></div>
-        
-        <button id="soundBtn" class="control-btn" title="Sound On/Off">🔊</button>
-        <button id="stopBtn" class="control-btn" title="Stop Game" style="display: none;">⏹️</button>
-        
-        <div id="iosMessage">
-            📱 iOS Tips:<br>
-            • Good lighting required<br>
-            • Hold phone steady<br>
-            • Point directly at markers<br>
-            • Move slowly
-        </div>
-        
+        <div id="scorePanel">🍬 Candy: <span id="score">0</span></div>
+        <div id="funCounter">🎉 Fun: <span id="taps">0</span></div>
         <div id="instructions">
-            <div style="font-size: 2em; margin-bottom: 10px;">🎮</div>
-            <div>Find markers and tap colorful icons!</div>
+            <div style="font-size: 2em; margin-bottom: 10px;">🎃</div>
+            <div>Find Halloween monsters!</div>
             <div style="color: #FFD166; margin-top: 10px; font-size: 0.9em;">
-                Each color = different monster & sound!
+                Tap them for candy & spooky sounds!
+            </div>
+            <div style="color: #06D6A0; margin-top: 15px; font-size: 0.8em;">
+                Play as long as you want! 🕰️
             </div>
         </div>
-        <button id="startBtn" class="gameBtn">🎯 Start Monster Party!</button>
-        <button id="restartBtn" class="gameBtn" style="display: none;">🔄 Play Again!</button>
+        <button id="startBtn" class="gameBtn">🎮 Start Monster Party!</button>
+        <button id="endBtn" class="gameBtn" style="display: none;">🏁 Finish Game</button>
     </div>
 
     <!-- AR Scene -->
     <a-scene
-        mindar-image="imageTargetSrc: ./7-targets.mind; 
-                      filterMinCF: 0.0005; 
-                      filterBetaCF: 0.005; 
-                      warmupTolerance: 10; 
-                      missTolerance: 5; 
-                      maxTrack: 3;
-                      uiScanning: #scanningOverlay; 
-                      uiLoading: no;
-                      autoStart: false;"
+        mindar-image="imageTargetSrc: ./7-targets.mind; autoStart: false;"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
         loading-screen="enabled: false"
         renderer="colorManagement: true; physicallyCorrectLights: true;"
         embedded
     >
-        <a-assets timeout="60000">
+        <a-assets timeout="45000">
+            <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
             <!-- Monster sounds -->
             <audio id="boo1" src="./boo1.mp3" preload="auto"></audio>
             <audio id="boo2" src="./boo2.mp3" preload="auto"></audio>
@@ -288,247 +238,383 @@
             <img id="logo7" src="./logo7.png" crossorigin="anonymous">
         </a-assets>
 
-        <a-camera 
-            look-controls="enabled: false" 
-            position="0 0 0" 
-            wasd-controls="enabled:false"
-        ></a-camera>
+        <a-camera look-controls="enabled: false" position="0 0 0" wasd-controls="enabled:false"></a-camera>
 
-        <!-- Monsters with modern animation -->
+        <!-- Interactive Monster targets -->
         <a-entity mindar-image-target="targetIndex: 0" class="monster-target">
-            <a-image src="#logo1" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo1"
-                animation__rot="property: rotation; to: 0 360 0; dur: 8000; loop: true; easing: linear"
-                animation__pos="property: position; to: 0 0.1 0; dur: 2000; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo1" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo1">
+                <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="position" to="0 0.1 0" dur="2000" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 1" class="monster-target">
-            <a-image src="#logo2" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo2"
-                animation__rot="property: rotation; to: 360 0 0; dur: 7000; loop: true; easing: linear"
-                animation__scale="property: scale; to: 1.4 1.4 1.4; dur: 1500; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo2" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo2">
+                <a-animation attribute="rotation" to="360 0 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="1.2 1.2 1.2" dur="1500" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 2" class="monster-target">
-            <a-image src="#logo3" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo3"
-                animation__rot="property: rotation; to: 0 0 360; dur: 6000; loop: true; easing: linear"
-                animation__pos="property: position; to: 0.1 0 0; dur: 1800; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo3" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo3">
+                <a-animation attribute="rotation" to="0 0 360" dur="4000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="position" to="0.1 0 0" dur="1800" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 3" class="monster-target">
-            <a-image src="#logo4" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo4"
-                animation__rot="property: rotation; to: 0 360 360; dur: 9000; loop: true; easing: linear"
-                animation__scale="property: scale; to: 1.0 1.0 1.0; dur: 2200; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo4" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo4">
+                <a-animation attribute="rotation" to="0 360 360" dur="7000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="0.8 0.8 0.8" dur="2200" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 4" class="monster-target">
-            <a-image src="#logo5" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo5"
-                animation__rot="property: rotation; to: 360 360 0; dur: 7500; loop: true; easing: linear"
-                animation__pos="property: position; to: 0 0.15 0; dur: 2500; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo5" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo5">
+                <a-animation attribute="rotation" to="360 360 0" dur="5500" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="position" to="0 0.15 0" dur="2500" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 5" class="monster-target">
-            <a-image src="#logo6" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo6"
-                animation__rot="property: rotation; to: 0 180 360; dur: 8500; loop: true; easing: linear"
-                animation__scale="property: scale; to: 1.5 1.5 1.5; dur: 1900; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo6" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo6">
+                <a-animation attribute="rotation" to="0 180 360" dur="6500" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="1.3 1.3 1.3" dur="1900" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
+        
         <a-entity mindar-image-target="targetIndex: 6" class="monster-target">
-            <a-image src="#logo7" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo7"
-                animation__rot="property: rotation; to: 360 0 360; dur: 6800; loop: true; easing: linear"
-                animation__pos="property: position; to: -0.1 0.1 0; dur: 2100; loop: true; dir: alternate; easing: easeInOutSine">
+            <a-image src="#logo7" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo7">
+                <a-animation attribute="rotation" to="360 0 360" dur="4800" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="position" to="-0.1 0.1 0" dur="2100" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
     </a-scene>
 
     <script>
+        // Game state
         const gameState = {
             score: 0,
             totalTaps: 0,
             gameActive: false,
-            soundEnabled: true,
             activeMonsters: new Map(),
             monsterSounds: ['boo1', 'boo2', 'boo3', 'boo4', 'boo5', 'boo6', 'boo7'],
-            monsterNames: ['Red Giggler', 'Yellow Chuckler', 'Green Laugher', 
-                          'Blue Snicker', 'Pink Giggler', 'Purple Chuckle', 
-                          'Blue Laugher'],
+            monsterNames: ['Spooky Ghost', 'Funny Pumpkin', 'Green Monster', 
+                          'Blue Creature', 'Pink Phantom', 'Purple Beast', 
+                          'Blue Wizard'],
             monsterColors: ['#FF6F61', '#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#9B5DE5', '#00BBF9']
         };
 
+        // DOM elements
         const startBtn = document.getElementById('startBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const soundBtn = document.getElementById('soundBtn');
+        const endBtn = document.getElementById('endBtn');
         const scoreDisplay = document.getElementById('score');
         const tapsDisplay = document.getElementById('taps');
         const instructions = document.getElementById('instructions');
-        const iosMessage = document.getElementById('iosMessage');
-        const scanningOverlay = document.getElementById('scanningOverlay');
+        const videoBackground = document.getElementById('videoBackground');
 
-        function isIOS() {
-            return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        }
+        // Celebration milestones
+        const milestones = [10, 25, 50, 100, 200, 500];
 
-        soundBtn.addEventListener('click', toggleSound);
-        function toggleSound() {
-            gameState.soundEnabled = !gameState.soundEnabled;
-            if (gameState.soundEnabled) {
-                soundBtn.innerHTML = '🔊';
-                soundBtn.classList.remove('muted');
-            } else {
-                soundBtn.innerHTML = '🔇';
-                soundBtn.classList.add('muted');
+        // Initialize camera video background
+        async function initializeVideoBackground() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                videoBackground.srcObject = stream;
+                console.log('Video background initialized');
+            } catch (error) {
+                console.error('Camera access failed:', error);
+                videoBackground.style.display = 'none';
             }
         }
 
-        stopBtn.addEventListener('click', stopGame);
-        function stopGame() {
-            if (!gameState.gameActive) return;
-            gameState.gameActive = false;
-            const scene = document.querySelector('a-scene');
-            const mindarSystem = scene.systems["mindar-image-system"];
-            if (mindarSystem?.stop) mindarSystem.stop();
-            gameState.activeMonsters.forEach(icon => icon?.remove());
-            gameState.activeMonsters.clear();
-            alert(`🎊 Game Finished!\nFinal Score: ${gameState.score}\nTotal Taps: ${gameState.totalTaps}`);
-            restartBtn.style.display = 'block';
-            stopBtn.style.display = 'none';
-            soundBtn.style.display = 'none';
-        }
-
+        // Start game
         startBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', startGame);
+        endBtn.addEventListener('click', endGame);
 
-        function startGame() {
+        async function startGame() {
+            await initializeVideoBackground();
+            
             gameState.score = 0;
             gameState.totalTaps = 0;
             gameState.gameActive = true;
             gameState.activeMonsters.clear();
+            
             scoreDisplay.textContent = '0';
             tapsDisplay.textContent = '0';
             startBtn.style.display = 'none';
-            restartBtn.style.display = 'none';
-            stopBtn.style.display = 'block';
-            soundBtn.style.display = 'block';
+            endBtn.style.display = 'block';
             instructions.style.display = 'none';
-            scanningOverlay.classList.add('scanning');
-
-            // Show iOS tip
-            if (isIOS()) {
-                iosMessage.style.display = 'block';
-                setTimeout(() => iosMessage.style.display = 'none', 5000);
-            }
-
-            // Start MindAR after scene is ready
+            
+            // Start AR
             const scene = document.querySelector('a-scene');
-            const startAR = () => {
-                const mindarSystem = scene.systems["mindar-image-system"];
-                if (mindarSystem && !mindarSystem.started) {
-                    mindarSystem.start();
-                    scanningOverlay.classList.remove('scanning');
-                }
-            };
-
-            if (scene.hasLoaded) {
-                startAR();
-            } else {
-                scene.addEventListener('loaded', startAR, { once: true });
+            const mindarSystem = scene.systems["mindar-image-system"];
+            if (mindarSystem) {
+                mindarSystem.start();
             }
+            
+            enableAudio();
         }
 
-        // Monster interaction
+        function endGame() {
+            gameState.gameActive = false;
+            
+            // Stop AR
+            const scene = document.querySelector('a-scene');
+            const mindarSystem = scene.systems["mindar-image-system"];
+            if (mindarSystem) {
+                mindarSystem.stop();
+            }
+            
+            // Show final celebration
+            showFinalCelebration();
+        }
+
+        function showFinalCelebration() {
+            const messages = [
+                `AMAZING! You collected ${gameState.score} candies! 🍬`,
+                `WOW! ${gameState.totalTaps} spooky taps! 🎃`,
+                `INCREDIBLE! You made ${gameState.score / 10} monsters happy! 👻`,
+                `FANTASTIC! ${gameState.totalTaps} moments of fun! 🎉`
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            alert(`🎊 HALLOWEEN PARTY COMPLETE! 🎊\n\n${randomMessage}\n\nThanks for playing! 👻`);
+            
+            // Reset UI
+            startBtn.style.display = 'block';
+            endBtn.style.display = 'none';
+        }
+
+        // Monster interaction system
         document.querySelector('a-scene').addEventListener('loaded', () => {
             const targets = document.querySelectorAll('a-entity[mindar-image-target]');
-            let foundCount = 0;
-
+            
             targets.forEach((target, index) => {
+                let tapIcon = null;
+                let isActive = false;
+                
                 target.addEventListener('targetFound', () => {
-                    foundCount++;
                     if (!gameState.gameActive) return;
-                    if (!gameState.activeMonsters.has(index)) {
+                    
+                    const monsterImg = target.querySelector('a-image');
+                    if (monsterImg && !gameState.activeMonsters.has(index)) {
                         createTapIcon(target, index);
-                        const img = target.querySelector('a-image');
-                        if (img) img.classList.add('active-monster');
-                        if (foundCount === 1) scanningOverlay.classList.remove('scanning');
+                        isActive = true;
+                        monsterImg.classList.add('active-monster');
                     }
                 });
 
                 target.addEventListener('targetLost', () => {
-                    const icon = gameState.activeMonsters.get(index);
-                    if (icon) {
-                        icon.remove();
+                    if (tapIcon) {
+                        tapIcon.remove();
+                        tapIcon = null;
                         gameState.activeMonsters.delete(index);
-                        const img = target.querySelector('a-image');
-                        if (img) img.classList.remove('active-monster');
+                        isActive = false;
+                        
+                        const monsterImg = target.querySelector('a-image');
+                        if (monsterImg) {
+                            monsterImg.classList.remove('active-monster');
+                        }
                     }
                 });
-
-                const img = target.querySelector('a-image');
-                if (img) {
-                    img.addEventListener('click', () => {
-                        if (gameState.gameActive && gameState.activeMonsters.has(index)) {
-                            handleMonsterTap(target, index);
-                        }
+                
+                const monsterImg = target.querySelector('a-image');
+                if (monsterImg) {
+                    monsterImg.addEventListener('click', (e) => {
+                        if (!gameState.gameActive || !isActive) return;
+                        handleMonsterTap(target, index, e);
                     });
                 }
             });
         });
 
-        function createTapIcon(target, index) {
+        function createTapIcon(target, monsterIndex) {
             const tapIcon = document.createElement('div');
-            tapIcon.className = `tap-icon tap-icon-${index}`;
+            tapIcon.className = `tap-icon tap-icon-${monsterIndex}`;
+            
             const emojis = ['👻', '🎃', '😈', '🦇', '🐉', '👽', '🤡'];
-            tapIcon.innerHTML = emojis[index];
+            tapIcon.innerHTML = emojis[monsterIndex];
+            
             const positions = [
                 { left: '10%', top: '20%' }, { left: '80%', top: '25%' },
                 { left: '15%', top: '70%' }, { left: '75%', top: '65%' },
                 { left: '45%', top: '15%' }, { left: '55%', top: '75%' },
                 { left: '25%', top: '45%' }
             ];
-            const pos = positions[index] || { left: '50%', top: '50%' };
+            
+            const pos = positions[monsterIndex] || { left: '50%', top: '50%' };
             tapIcon.style.left = pos.left;
             tapIcon.style.top = pos.top;
-            tapIcon.title = `${gameState.monsterNames[index]} - Click me!`;
+            
+            tapIcon.title = `${gameState.monsterNames[monsterIndex]} - Tap for candy!`;
+            
             document.getElementById('gameUI').appendChild(tapIcon);
-            gameState.activeMonsters.set(index, tapIcon);
+            gameState.activeMonsters.set(monsterIndex, tapIcon);
+            
             tapIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
-                handleMonsterTap(target, index);
+                handleMonsterTap(target, monsterIndex, e);
             });
+            
+            setTimeout(() => {
+                tapIcon.style.opacity = '1';
+            }, monsterIndex * 200);
         }
 
-        function handleMonsterTap(target, index) {
-            const img = target.querySelector('a-image');
-            if (!img) return;
-
-            // Visual feedback
-            img.classList.add('monster-dance');
-            setTimeout(() => img.classList.remove('monster-dance'), 1000);
-
-            // Sound
-            if (gameState.soundEnabled) {
-                const sound = document.getElementById(gameState.monsterSounds[index]);
-                if (sound) {
-                    sound.currentTime = 0;
-                    sound.volume = 0.7;
-                    sound.play().catch(e => console.log("Sound play failed:", e));
-                }
+        function handleMonsterTap(target, monsterIndex, event = null) {
+            if (!gameState.gameActive) return;
+            
+            const monsterImg = target.querySelector('a-image');
+            if (!monsterImg) return;
+            
+            // Visual effects
+            if (event) {
+                createClickEffect(event.clientX, event.clientY, monsterIndex);
+                createMonsterTrail(monsterIndex);
             }
-
-            // Scoring
-            const points = 10 + (index + 1) * 2;
-            gameState.score += points;
+            
+            // Monster animation
+            monsterImg.classList.add('monster-dance');
+            setTimeout(() => {
+                monsterImg.classList.remove('monster-dance');
+            }, 1000);
+            
+            // Play monster sound
+            playSound(gameState.monsterSounds[monsterIndex]);
+            
+            // Update score
+            const candyPoints = 10 + (monsterIndex * 2);
+            gameState.score += candyPoints;
             gameState.totalTaps++;
             scoreDisplay.textContent = gameState.score;
             tapsDisplay.textContent = gameState.totalTaps;
-
-            if (gameState.totalTaps % 7 === 0) {
-                gameState.score += 77;
-                scoreDisplay.textContent = gameState.score;
+            
+            // Show candy points popup
+            showPointsPopup(`+${candyPoints} 🍬`, event?.clientX || window.innerWidth/2, event?.clientY || window.innerHeight/2, monsterIndex);
+            
+            // Check for milestones
+            checkMilestones();
+            
+            // Special celebration every 25 taps
+            if (gameState.totalTaps % 25 === 0) {
+                showCelebration('AWESOME! 🎊', monsterIndex);
             }
         }
 
-        // Ensure user interaction before audio
+        function checkMilestones() {
+            milestones.forEach(milestone => {
+                if (gameState.score === milestone) {
+                    showCelebration(`🎯 ${milestone} CANDIES!`, 0);
+                }
+            });
+        }
+
+        function showCelebration(text, monsterIndex) {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = text;
+            celebration.style.color = gameState.monsterColors[monsterIndex];
+            celebration.style.left = `${Math.random() * 70 + 15}%`;
+            celebration.style.top = '80%';
+            
+            document.getElementById('gameUI').appendChild(celebration);
+            
+            setTimeout(() => {
+                celebration.remove();
+            }, 2000);
+        }
+
+        function createClickEffect(x, y, monsterIndex) {
+            const effect = document.createElement('div');
+            effect.className = `click-effect click-effect-${monsterIndex}`;
+            effect.style.left = `${x - 40}px`;
+            effect.style.top = `${y - 40}px`;
+            document.getElementById('gameUI').appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 800);
+        }
+
+        function createMonsterTrail(monsterIndex) {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const trail = document.createElement('div');
+                    trail.className = 'monster-trail';
+                    trail.style.background = gameState.monsterColors[monsterIndex];
+                    trail.style.left = `${Math.random() * window.innerWidth}px`;
+                    trail.style.top = `${Math.random() * window.innerHeight}px`;
+                    document.getElementById('gameUI').appendChild(trail);
+                    
+                    setTimeout(() => {
+                        trail.remove();
+                    }, 600);
+                }, i * 100);
+            }
+        }
+
+        function showPointsPopup(text, x, y, monsterIndex) {
+            const popup = document.createElement('div');
+            popup.textContent = text;
+            popup.style.position = 'absolute';
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            popup.style.color = gameState.monsterColors[monsterIndex];
+            popup.style.fontSize = '1.8em';
+            popup.style.fontWeight = 'bold';
+            popup.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+            popup.style.zIndex = '100';
+            popup.style.pointerEvents = 'none';
+            popup.style.animation = 'floatUp 1s ease-out forwards';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translateY(0) scale(1); opacity: 1; }
+                    100% { transform: translateY(-80px) scale(1.3); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.getElementById('gameUI').appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+                style.remove();
+            }, 1000);
+        }
+
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            if (sound) {
+                sound.currentTime = 0;
+                sound.volume = 0.7;
+                sound.play().catch(e => console.log('Sound play failed:', e));
+            }
+        }
+
+        function enableAudio() {
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic) {
+                bgMusic.muted = false;
+                bgMusic.volume = 0.1;
+                bgMusic.loop = true;
+                bgMusic.play().catch(e => console.log('Music play failed'));
+            }
+        }
+
+        // Auto-start after user interaction
         document.body.addEventListener('click', () => {
-            if (!gameState.gameActive) startBtn.style.display = 'block';
+            if (!gameState.gameActive) {
+                startBtn.style.display = 'block';
+            }
         }, { once: true });
     </script>
 </body>
