@@ -62,6 +62,48 @@
             backdrop-filter: blur(10px);
         }
         
+        /* Control buttons */
+        .control-btn {
+            position: absolute;
+            background: rgba(0,0,0,0.7); 
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.9);
+        }
+        
+        #soundBtn {
+            bottom: 100px;
+            right: 20px;
+            background: rgba(255,215,102,0.9);
+        }
+        
+        #stopBtn {
+            bottom: 20px;
+            right: 20px;
+            background: rgba(239,71,111,0.9);
+        }
+        
+        #soundBtn.muted {
+            background: rgba(128,128,128,0.7);
+            opacity: 0.7;
+        }
+        
         #instructions {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.9); color: white; padding: 25px;
@@ -82,6 +124,24 @@
         }
         
         .gameBtn:active { transform: translateX(-50%) scale(0.95); }
+        
+        /* iOS specific message */
+        #iosMessage {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #FFD166;
+            padding: 15px 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 2px solid #FF6F61;
+            max-width: 80%;
+        }
         
         /* Monster icons with different colors */
         .tap-icon {
@@ -144,28 +204,7 @@
             100% { transform: scale(1) rotate(0deg) translateY(0); }
         }
         
-        @keyframes monsterPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.7; }
-        }
-        
-        @keyframes monsterSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-        
-        @keyframes monsterBounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            25% { transform: translateY(-20px) scale(1.1); }
-            50% { transform: translateY(0) scale(1.2); }
-            75% { transform: translateY(-10px) scale(1.1); }
-        }
-        
         .monster-dance { animation: monsterDance 1s ease; }
-        .monster-pulse { animation: monsterPulse 0.8s ease; }
-        .monster-spin { animation: monsterSpin 1.2s ease; }
-        .monster-bounce { animation: monsterBounce 0.9s ease; }
         
         /* Monster trail effect */
         .monster-trail {
@@ -199,6 +238,16 @@
     <div id="gameUI">
         <div id="scorePanel">🌟 Score: <span id="score">0</span></div>
         <div id="tapCounter">👆 Taps: <span id="taps">0</span></div>
+        
+        <!-- Control Buttons -->
+        <button id="soundBtn" class="control-btn" title="Sound On/Off">🔊</button>
+        <button id="stopBtn" class="control-btn" title="Stop Game" style="display: none;">⏹️</button>
+        
+        <div id="iosMessage">
+            📱 Point camera at markers slowly<br>
+            iOS needs good lighting & steady hands!
+        </div>
+        
         <div id="instructions">
             <div style="font-size: 2em; margin-bottom: 10px;">🎮</div>
             <div>Find markers and tap colorful icons!</div>
@@ -212,16 +261,15 @@
 
     <!-- AR Scene -->
     <a-scene
-        mindar-image="imageTargetSrc: ./7-targets.mind; autoStart: false;"
+        mindar-image="imageTargetSrc: ./7-targets.mind; autoStart: false; maxTrack: 3;"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
         loading-screen="enabled: false"
         renderer="colorManagement: true; physicallyCorrectLights: true;"
         embedded
     >
-        <a-assets timeout="45000">
+        <a-assets timeout="60000">
             <audio id="bg-music" src="./bg-music.mp3" preload="auto"></audio>
-            <audio id="click-sound" src="./click-sound.mp3" preload="auto"></audio>
             <!-- Monster sounds -->
             <audio id="boo1" src="./boo1.mp3" preload="auto"></audio>
             <audio id="boo2" src="./boo2.mp3" preload="auto"></audio>
@@ -240,54 +288,59 @@
             <img id="logo7" src="./logo7.png" crossorigin="anonymous">
         </a-assets>
 
-        <a-camera look-controls="enabled: false" position="0 0 0" wasd-controls="enabled:false"></a-camera>
+        <a-camera 
+            look-controls="enabled: false" 
+            position="0 0 0" 
+            wasd-controls="enabled:false"
+            mindar-image-target
+        ></a-camera>
 
         <!-- Interactive Monster targets -->
         <a-entity mindar-image-target="targetIndex: 0" class="monster-target">
-            <a-image src="#logo1" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo1">
-                <a-animation attribute="rotation" to="0 360 0" dur="6000" repeat="indefinite" easing="linear"></a-animation>
+            <a-image src="#logo1" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo1">
+                <a-animation attribute="rotation" to="0 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
                 <a-animation attribute="position" to="0 0.1 0" dur="2000" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 1" class="monster-target">
-            <a-image src="#logo2" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo2">
-                <a-animation attribute="rotation" to="360 0 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
-                <a-animation attribute="scale" to="1.2 1.2 1.2" dur="1500" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
+            <a-image src="#logo2" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo2">
+                <a-animation attribute="rotation" to="360 0 0" dur="7000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="1.4 1.4 1.4" dur="1500" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 2" class="monster-target">
-            <a-image src="#logo3" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo3">
-                <a-animation attribute="rotation" to="0 0 360" dur="4000" repeat="indefinite" easing="linear"></a-animation>
+            <a-image src="#logo3" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo3">
+                <a-animation attribute="rotation" to="0 0 360" dur="6000" repeat="indefinite" easing="linear"></a-animation>
                 <a-animation attribute="position" to="0.1 0 0" dur="1800" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 3" class="monster-target">
-            <a-image src="#logo4" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo4">
-                <a-animation attribute="rotation" to="0 360 360" dur="7000" repeat="indefinite" easing="linear"></a-animation>
-                <a-animation attribute="scale" to="0.8 0.8 0.8" dur="2200" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
+            <a-image src="#logo4" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo4">
+                <a-animation attribute="rotation" to="0 360 360" dur="9000" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="1.0 1.0 1.0" dur="2200" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 4" class="monster-target">
-            <a-image src="#logo5" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo5">
-                <a-animation attribute="rotation" to="360 360 0" dur="5500" repeat="indefinite" easing="linear"></a-animation>
+            <a-image src="#logo5" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo5">
+                <a-animation attribute="rotation" to="360 360 0" dur="7500" repeat="indefinite" easing="linear"></a-animation>
                 <a-animation attribute="position" to="0 0.15 0" dur="2500" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 5" class="monster-target">
-            <a-image src="#logo6" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo6">
-                <a-animation attribute="rotation" to="0 180 360" dur="6500" repeat="indefinite" easing="linear"></a-animation>
-                <a-animation attribute="scale" to="1.3 1.3 1.3" dur="1900" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
+            <a-image src="#logo6" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo6">
+                <a-animation attribute="rotation" to="0 180 360" dur="8500" repeat="indefinite" easing="linear"></a-animation>
+                <a-animation attribute="scale" to="1.5 1.5 1.5" dur="1900" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
         
         <a-entity mindar-image-target="targetIndex: 6" class="monster-target">
-            <a-image src="#logo7" position="0 0 0" scale="1 1 1" class="clickable-monster" data-sound="boo7">
-                <a-animation attribute="rotation" to="360 0 360" dur="4800" repeat="indefinite" easing="linear"></a-animation>
+            <a-image src="#logo7" position="0 0 0" scale="1.2 1.2 1.2" class="clickable-monster" data-sound="boo7">
+                <a-animation attribute="rotation" to="360 0 360" dur="6800" repeat="indefinite" easing="linear"></a-animation>
                 <a-animation attribute="position" to="-0.1 0.1 0" dur="2100" repeat="indefinite" direction="alternate" easing="easeInOutSine"></a-animation>
             </a-image>
         </a-entity>
@@ -299,23 +352,37 @@
             score: 0,
             totalTaps: 0,
             gameActive: false,
+            soundEnabled: true,
             activeMonsters: new Map(),
             monsterSounds: ['boo1', 'boo2', 'boo3', 'boo4', 'boo5', 'boo6', 'boo7'],
             monsterNames: ['Red Giggler', 'Yellow Chuckler', 'Green Laugher', 
                           'Blue Snicker', 'Pink Giggler', 'Purple Chuckle', 
                           'Blue Laugher'],
-            monsterAnimations: ['monster-dance', 'monster-pulse', 'monster-spin', 
-                               'monster-bounce', 'monster-dance', 'monster-pulse', 'monster-spin'],
             monsterColors: ['#FF6F61', '#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#9B5DE5', '#00BBF9']
         };
 
         // DOM elements
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const soundBtn = document.getElementById('soundBtn');
         const scoreDisplay = document.getElementById('score');
         const tapsDisplay = document.getElementById('taps');
         const instructions = document.getElementById('instructions');
         const videoBackground = document.getElementById('videoBackground');
+        const iosMessage = document.getElementById('iosMessage');
+
+        // Check if iOS
+        function isIOS() {
+            return [
+                'iPad Simulator',
+                'iPhone Simulator',
+                'iPod Simulator',
+                'iPad',
+                'iPhone',
+                'iPod'
+            ].includes(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+        }
 
         // Initialize camera video background
         async function initializeVideoBackground() {
@@ -329,10 +396,74 @@
                 });
                 videoBackground.srcObject = stream;
                 console.log('Video background initialized');
+                
+                // Show iOS hint if needed
+                if (isIOS()) {
+                    setTimeout(() => {
+                        iosMessage.style.display = 'block';
+                        setTimeout(() => {
+                            iosMessage.style.display = 'none';
+                        }, 5000);
+                    }, 2000);
+                }
             } catch (error) {
                 console.error('Camera access failed:', error);
                 videoBackground.style.display = 'none';
+                alert('Camera access required! Please allow camera permissions.');
             }
+        }
+
+        // Sound control
+        soundBtn.addEventListener('click', toggleSound);
+        
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            
+            const allSounds = document.querySelectorAll('audio');
+            allSounds.forEach(sound => {
+                sound.muted = !gameState.soundEnabled;
+            });
+            
+            if (gameState.soundEnabled) {
+                soundBtn.innerHTML = '🔊';
+                soundBtn.classList.remove('muted');
+                soundBtn.title = 'Sound On';
+            } else {
+                soundBtn.innerHTML = '🔇';
+                soundBtn.classList.add('muted');
+                soundBtn.title = 'Sound Off';
+            }
+        }
+
+        // Stop game
+        stopBtn.addEventListener('click', stopGame);
+        
+        function stopGame() {
+            if (!gameState.gameActive) return;
+            
+            gameState.gameActive = false;
+            
+            // Stop AR
+            const scene = document.querySelector('a-scene');
+            const mindarSystem = scene.systems["mindar-image-system"];
+            if (mindarSystem) {
+                mindarSystem.stop();
+            }
+            
+            // Clear all tap icons
+            gameState.activeMonsters.forEach((icon, index) => {
+                if (icon) icon.remove();
+            });
+            gameState.activeMonsters.clear();
+            
+            // Show results
+            const finalMessage = `🎊 Game Finished! 🎊\n\nFinal Score: ${gameState.score}\nTotal Taps: ${gameState.totalTaps}\n\nGreat job! 👏`;
+            alert(finalMessage);
+            
+            // Reset UI
+            restartBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            soundBtn.style.display = 'none';
         }
 
         // Start game
@@ -351,27 +482,46 @@
             tapsDisplay.textContent = '0';
             startBtn.style.display = 'none';
             restartBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            soundBtn.style.display = 'block';
             instructions.style.display = 'none';
             
-            // Start AR
-            const scene = document.querySelector('a-scene');
-            const mindarSystem = scene.systems["mindar-image-system"];
-            if (mindarSystem) {
-                mindarSystem.start();
-            }
+            // Start AR with delay for iOS
+            setTimeout(() => {
+                const scene = document.querySelector('a-scene');
+                const mindarSystem = scene.systems["mindar-image-system"];
+                if (mindarSystem) {
+                    mindarSystem.start();
+                    console.log('MindAR started');
+                    
+                    // Additional iOS optimization
+                    if (isIOS()) {
+                        setTimeout(() => {
+                            iosMessage.style.display = 'block';
+                            setTimeout(() => {
+                                iosMessage.style.display = 'none';
+                            }, 4000);
+                        }, 1000);
+                    }
+                }
+            }, 1000);
             
             enableAudio();
         }
 
         // Monster interaction system
         document.querySelector('a-scene').addEventListener('loaded', () => {
+            console.log('AR Scene loaded');
+            
             const targets = document.querySelectorAll('a-entity[mindar-image-target]');
+            console.log(`Found ${targets.length} AR targets`);
             
             targets.forEach((target, index) => {
                 let tapIcon = null;
                 let isActive = false;
                 
                 target.addEventListener('targetFound', () => {
+                    console.log(`Target ${index} found`);
                     if (!gameState.gameActive) return;
                     
                     const monsterImg = target.querySelector('a-image');
@@ -383,6 +533,7 @@
                 });
 
                 target.addEventListener('targetLost', () => {
+                    console.log(`Target ${index} lost`);
                     if (tapIcon) {
                         tapIcon.remove();
                         tapIcon = null;
@@ -410,11 +561,9 @@
             const tapIcon = document.createElement('div');
             tapIcon.className = `tap-icon tap-icon-${monsterIndex}`;
             
-            // Different emojis for each monster
             const emojis = ['👻', '🎃', '😈', '🦇', '🐉', '👽', '🤡'];
             tapIcon.innerHTML = emojis[monsterIndex];
             
-            // Random position around screen edges
             const positions = [
                 { left: '10%', top: '20%' }, { left: '80%', top: '25%' },
                 { left: '15%', top: '70%' }, { left: '75%', top: '65%' },
@@ -436,7 +585,6 @@
                 handleMonsterTap(target, monsterIndex, e);
             });
             
-            // Add slight delay for staggered appearance
             setTimeout(() => {
                 tapIcon.style.opacity = '1';
             }, monsterIndex * 200);
@@ -454,20 +602,20 @@
                 createMonsterTrail(monsterIndex);
             }
             
-            // Random monster animation
-            const animations = gameState.monsterAnimations;
-            const randomAnim = animations[Math.floor(Math.random() * animations.length)];
-            monsterImg.classList.add(randomAnim);
+            // Monster animation
+            monsterImg.classList.add('monster-dance');
             setTimeout(() => {
-                monsterImg.classList.remove(randomAnim);
-            }, 1200);
+                monsterImg.classList.remove('monster-dance');
+            }, 1000);
             
             // Play unique monster sound
-            playSound(gameState.monsterSounds[monsterIndex]);
+            if (gameState.soundEnabled) {
+                playSound(gameState.monsterSounds[monsterIndex]);
+            }
             
-            // Update score with color-coded bonus
+            // Update score
             const basePoints = 10;
-            const colorBonus = (monsterIndex + 1) * 2; // Different bonus per color
+            const colorBonus = (monsterIndex + 1) * 2;
             const totalPoints = basePoints + colorBonus;
             
             gameState.score += totalPoints;
@@ -478,14 +626,12 @@
             // Show points popup
             showPointsPopup(totalPoints, event?.clientX || window.innerWidth/2, event?.clientY || window.innerHeight/2, monsterIndex);
             
-            // Special bonus every 7 taps (lucky number!)
+            // Special bonus every 7 taps
             if (gameState.totalTaps % 7 === 0) {
                 showBonusMessage('LUCKY 7! +77 🎰', monsterIndex);
                 gameState.score += 77;
                 scoreDisplay.textContent = gameState.score;
             }
-            
-            playSound('click-sound');
         }
 
         function createClickEffect(x, y, monsterIndex) {
@@ -531,7 +677,6 @@
             popup.style.pointerEvents = 'none';
             popup.style.animation = 'floatUp 1s ease-out forwards';
             
-            // Add float up animation
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes floatUp {
@@ -573,6 +718,8 @@
         }
 
         function playSound(soundId) {
+            if (!gameState.soundEnabled) return;
+            
             const sound = document.getElementById(soundId);
             if (sound) {
                 sound.currentTime = 0;
@@ -583,7 +730,7 @@
 
         function enableAudio() {
             const bgMusic = document.getElementById('bg-music');
-            if (bgMusic) {
+            if (bgMusic && gameState.soundEnabled) {
                 bgMusic.muted = false;
                 bgMusic.volume = 0.1;
                 bgMusic.loop = true;
